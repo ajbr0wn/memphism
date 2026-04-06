@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../engine/chapter1_levels.dart';
 import '../screens/join_screen.dart';
 import '../screens/ordering_screen.dart';
@@ -14,6 +15,24 @@ class LevelSelectScreen extends StatefulWidget {
 
 class _LevelSelectScreenState extends State<LevelSelectScreen> {
   int _unlockedUpTo = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProgress();
+  }
+
+  Future<void> _loadProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _unlockedUpTo = prefs.getInt('unlockedUpTo') ?? 0;
+    });
+  }
+
+  Future<void> _saveProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('unlockedUpTo', _unlockedUpTo);
+  }
 
   void _playLevel(int index) {
     final level = ch1AllLevels[index];
@@ -52,6 +71,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
     if (index >= _unlockedUpTo) {
       setState(() => _unlockedUpTo = index + 1);
     }
+    _saveProgress();
     Navigator.of(context).pop();
   }
 

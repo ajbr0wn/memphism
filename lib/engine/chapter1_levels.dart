@@ -84,20 +84,8 @@ final partitionLevels = [
 
 final orderingLevels = [
   OrderingLevelConfig(
-    id: 'o1-bool',
+    id: 'o1-partitions3',
     title: 'ORDER',
-    subtitle: 'Arrange: which is "less than"?',
-    partitions: [
-      Partition(const [{'F'}]),         // false = all connected
-      Partition(const [{'T'}, {'F'}]),  // not used, just for bool ordering
-    ],
-    elementLabels: const ['T', 'F'],
-    hint: 'false ≤ true. False implies true.',
-    notationReveal: 'false ≤ true\n\nA ≤ B if A implies B',
-  ),
-  OrderingLevelConfig(
-    id: 'o2-partitions3',
-    title: 'ARRANGE',
     subtitle: 'Sort by fineness. Coarse top, fine bottom.',
     partitions: [
       Partition(const [{'1', '2', '3'}]),
@@ -105,8 +93,23 @@ final orderingLevels = [
       Partition(const [{'1'}, {'2'}, {'3'}]),
     ],
     elementLabels: const ['1', '2', '3'],
-    hint: 'More groups = finer = lower.',
-    notationReveal: '{1}{2}{3} ≤ {1,2}{3} ≤ {1,2,3}\n\nfiner ≤ coarser',
+    hint: 'More groups = finer = goes lower.',
+    notationReveal: '{1,2,3}\n  ≥\n{1,2}{3}\n  ≥\n{1}{2}{3}',
+  ),
+  OrderingLevelConfig(
+    id: 'o2-partitions3-all',
+    title: 'ARRANGE',
+    subtitle: 'Sort ALL five partitions of {1,2,3}.',
+    partitions: [
+      Partition(const [{'1', '2', '3'}]),
+      Partition(const [{'1', '2'}, {'3'}]),
+      Partition(const [{'1', '3'}, {'2'}]),
+      Partition(const [{'2', '3'}, {'1'}]),
+      Partition(const [{'1'}, {'2'}, {'3'}]),
+    ],
+    elementLabels: const ['1', '2', '3'],
+    hint: 'All-together at top, all-separate at bottom. The three "two+one" partitions are in the middle (same level).',
+    notationReveal: 'A Hasse diagram!\n\nSame level = incomparable\n(neither is finer)',
   ),
 ];
 

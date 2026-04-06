@@ -77,8 +77,10 @@ class _OrderingScreenState extends State<OrderingScreen> {
       _slots.insert(newIndex, item);
     });
     Haptics.snap();
+  }
 
-    if (_isCorrectOrder() && !_levelComplete) {
+  void _submit() {
+    if (_isCorrectOrder()) {
       setState(() => _levelComplete = true);
       Haptics.triumph();
 
@@ -88,6 +90,17 @@ class _OrderingScreenState extends State<OrderingScreen> {
           Haptics.reveal();
         });
       }
+    } else {
+      Haptics.fizzle();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Not quite — coarsest (fewest groups) goes at top.',
+              style: TextStyle(color: Palette.textPrimary)),
+          backgroundColor: Palette.bgCard,
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -162,6 +175,27 @@ class _OrderingScreenState extends State<OrderingScreen> {
                 ],
               ),
             ),
+            if (!_levelComplete)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Palette.cyan.withValues(alpha: 0.15),
+                      foregroundColor: Palette.cyan,
+                      side: BorderSide(color: Palette.cyan.withValues(alpha: 0.4)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
+                    ),
+                    child: const Text('SUBMIT',
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, letterSpacing: 2)),
+                  ),
+                ),
+              ),
             if (_showNotation) _buildNotation(),
             if (_levelComplete) _buildContinue(),
             const SizedBox(height: 16),
