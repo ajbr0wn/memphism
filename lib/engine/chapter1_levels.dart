@@ -8,8 +8,9 @@ import '../screens/partition_screen.dart';
 import '../screens/preorder_screen.dart';
 
 /// All Chapter 1 levels in order.
-/// Covers: partitions, ordering, Hasse diagrams, joins.
-/// Building toward Exercises 1.6, 1.7.
+/// Covers: partitions, ordering, Hasse diagrams, joins, functions,
+/// preorders, meets, power sets, divisibility, generative effects.
+/// Building toward Exercises 1.6, 1.7, 1.24, 1.46, 1.51, 1.63, 1.87, 1.90.
 
 // ── Partition levels (from partition_levels.dart) ──
 
@@ -80,6 +81,28 @@ final partitionLevels = [
     ],
     hint: 'There are 15 ways.',
     notationReveal: 'Bell number B₄ = 15\n\nExercise 1.6 ✓',
+  ),
+  // New: partition with letter elements (variety)
+  PartitionLevelConfig(
+    id: 'p7-letters',
+    title: 'SPLIT',
+    subtitle: 'Make: {a,c} and {b}.',
+    elementLabels: const ['a', 'b', 'c'],
+    type: PartitionLevelType.createTarget,
+    target: Partition(const [{'a', 'c'}, {'b'}]),
+    positions: const [Offset(0.3, 0.4), Offset(0.7, 0.4), Offset(0.5, 0.65)],
+    hint: 'a and c together, b alone.',
+  ),
+  // New: partition of symbols (Ex 1.6 callback with different elements)
+  PartitionLevelConfig(
+    id: 'p8-symbols',
+    title: 'REMIX',
+    subtitle: 'Find every way to group {♠, ♥, ♦}.',
+    elementLabels: const ['♠', '♥', '♦'],
+    type: PartitionLevelType.findAll,
+    positions: const [Offset(0.5, 0.3), Offset(0.3, 0.6), Offset(0.7, 0.6)],
+    hint: 'Same as before with different symbols — there are still 5.',
+    notationReveal: 'B₃ = 5 regardless of labels!\n\nThe structure depends only\non the number of elements',
   ),
 ];
 
@@ -158,6 +181,38 @@ final joinLevels = [
     hint: 'In A: 1 is with 2, 3 is with 4. In B: 1 is with 3, 2 is with 4. So in the join, everyone is connected to everyone...',
     notationReveal: '{1,2}{3,4} ∨ {1,3}{2,4} = {1,2,3,4}\n\nGenerative effect!',
   ),
+  // New: join that DOESN'T collapse to top (4 elements)
+  JoinLevelConfig(
+    id: 'j4-partial',
+    title: 'PARTIAL',
+    subtitle: 'Find A ∨ B. It\'s not always the top!',
+    partitionA: Partition(const [{'1', '2'}, {'3'}, {'4'}]),
+    partitionB: Partition(const [{'1'}, {'2'}, {'3', '4'}]),
+    expectedJoin: Partition(const [{'1', '2'}, {'3', '4'}]),
+    elementLabels: const ['1', '2', '3', '4'],
+    positions: const [
+      Offset(0.3, 0.3), Offset(0.7, 0.3),
+      Offset(0.3, 0.65), Offset(0.7, 0.65),
+    ],
+    hint: 'In A: 1-2 together. In B: 3-4 together. No chain connects them, so the join keeps both groups separate.',
+    notationReveal: '{1,2}{3}{4} ∨ {1}{2}{3,4}\n= {1,2}{3,4}\n\nNot everything merges!',
+  ),
+  // New: join with letters (spiral back)
+  JoinLevelConfig(
+    id: 'j5-letters',
+    title: 'WEAVE',
+    subtitle: 'Find A ∨ B.',
+    partitionA: Partition(const [{'a', 'b'}, {'c', 'd'}]),
+    partitionB: Partition(const [{'a', 'c'}, {'b', 'd'}]),
+    expectedJoin: Partition(const [{'a', 'b', 'c', 'd'}]),
+    elementLabels: const ['a', 'b', 'c', 'd'],
+    positions: const [
+      Offset(0.3, 0.3), Offset(0.7, 0.3),
+      Offset(0.3, 0.65), Offset(0.7, 0.65),
+    ],
+    hint: 'a-b and c-d in A; a-c and b-d in B. Every element connects to every other through chains...',
+    notationReveal: '{a,b}{c,d} ∨ {a,c}{b,d}\n= {a,b,c,d}\n\nSame generative effect,\ndifferent labels!',
+  ),
 ];
 
 // ── Function levels (Ex 1.24) ──
@@ -202,6 +257,39 @@ final functionLevels = [
     goal: FunctionGoal.bijective,
     hint: 'A perfect pairing — every input to a unique output, every output used.',
     notationReveal: 'f : A ≅ B\n\nBijective: a perfect\ncorrespondence',
+  ),
+  // New: identity function (Ex 1.23)
+  FunctionLevelConfig(
+    id: 'f5-identity',
+    title: 'SELF',
+    subtitle: 'Map each element to itself.',
+    domainLabels: const ['1', '2', '3'],
+    codomainLabels: const ['1', '2', '3'],
+    goal: FunctionGoal.bijective,
+    hint: 'The identity function: every element maps to itself. It\'s always bijective!',
+    notationReveal: 'id_A : A → A\n\nid(x) = x for all x\nThe simplest bijection',
+  ),
+  // New: harder surjection (4→2)
+  FunctionLevelConfig(
+    id: 'f6-surject4',
+    title: 'FLOOD',
+    subtitle: 'Map 4 elements onto 2. Every output must be hit.',
+    domainLabels: const ['1', '2', '3', '4'],
+    codomainLabels: const ['x', 'y'],
+    goal: FunctionGoal.surjective,
+    hint: 'Both x and y need at least one arrow. You have 4 inputs — plenty to go around.',
+    notationReveal: 'f : 4 ↠ 2\n\nA surjection from A to B\npartitions A into |B| groups',
+  ),
+  // New: injection into larger set (2→4)
+  FunctionLevelConfig(
+    id: 'f7-inject-big',
+    title: 'EMBED',
+    subtitle: 'Map 2 elements into 4, no sharing.',
+    domainLabels: const ['α', 'β'],
+    codomainLabels: const ['1', '2', '3', '4'],
+    goal: FunctionGoal.injective,
+    hint: 'Pick any two distinct outputs for your two inputs.',
+    notationReveal: 'f : 2 ↣ 4\n\nThere are 4×3 = 12\ndifferent injections!',
   ),
 ];
 
@@ -259,6 +347,72 @@ final preorderLevels = [
     },
     hint: 'A ⊆ B means every element of A is also in B. ∅ is a subset of everything.',
     notationReveal: 'P({1,2}) — the power set lattice\n\nIt\'s a diamond! (a.k.a. Boolean\nalgebra B₂)',
+  ),
+
+  // Exercise 1.63: Power set P({1,2,3}) — the CUBE!
+  // 8 subsets: ∅, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3}
+  // Cover relations: each subset → add one element
+  PreorderLevelConfig(
+    id: 'pre3-cube',
+    title: 'CUBE',
+    subtitle: 'Build P({1,2,3}). Draw a→b when a ⊆ b (covers only).',
+    elementLabels: const ['∅', '{1}', '{2}', '{3}', '{1,2}', '{1,3}', '{2,3}', 'X'],
+    positions: const [
+      Offset(0.5, 0.88),   // ∅ bottom center
+      Offset(0.2, 0.65),   // {1}
+      Offset(0.5, 0.65),   // {2}
+      Offset(0.8, 0.65),   // {3}
+      Offset(0.2, 0.38),   // {1,2}
+      Offset(0.5, 0.38),   // {1,3}
+      Offset(0.8, 0.38),   // {2,3}
+      Offset(0.5, 0.12),   // {1,2,3} = X at top
+    ],
+    expectedEdges: {
+      (0, 1), // ∅ → {1}
+      (0, 2), // ∅ → {2}
+      (0, 3), // ∅ → {3}
+      (1, 4), // {1} → {1,2}
+      (1, 5), // {1} → {1,3}
+      (2, 4), // {2} → {1,2}
+      (2, 6), // {2} → {2,3}
+      (3, 5), // {3} → {1,3}
+      (3, 6), // {3} → {2,3}
+      (4, 7), // {1,2} → X
+      (5, 7), // {1,3} → X
+      (6, 7), // {2,3} → X
+    },
+    hint: 'Draw an edge when adding exactly one element takes you from one set to another. 12 edges total.',
+    notationReveal: 'P({1,2,3}) is a cube!\n\nThe power set of an n-element\nset has 2ⁿ elements and\nlooks like an n-dimensional cube',
+  ),
+
+  // Divisibility on {1,...,8} — harder version of DIVIDE
+  PreorderLevelConfig(
+    id: 'pre4-divide8',
+    title: 'DIVIDE²',
+    subtitle: 'Divisibility on {1,...,8}. Covers only!',
+    elementLabels: const ['1', '2', '3', '4', '5', '6', '7', '8'],
+    positions: const [
+      Offset(0.5, 0.9),    // 1 bottom
+      Offset(0.2, 0.68),   // 2
+      Offset(0.4, 0.68),   // 3
+      Offset(0.12, 0.45),  // 4
+      Offset(0.6, 0.68),   // 5
+      Offset(0.4, 0.45),   // 6
+      Offset(0.8, 0.68),   // 7
+      Offset(0.12, 0.22),  // 8
+    ],
+    expectedEdges: {
+      (0, 1), // 1→2
+      (0, 2), // 1→3
+      (0, 4), // 1→5
+      (0, 6), // 1→7
+      (1, 3), // 2→4
+      (1, 5), // 2→6
+      (2, 5), // 3→6
+      (3, 7), // 4→8
+    },
+    hint: 'Cover = direct divisibility with nothing in between. 1→2→4→8, so 1→4 is NOT a cover. 8 edges total.',
+    notationReveal: 'Divisibility on {1,...,8}\n\n4→8 but not 2→8 (because 2→4→8)\n5 and 7 are "islands" — primes\nwith no multiples in range',
   ),
 ];
 
@@ -382,6 +536,128 @@ final meetJoinPickLevels = [
     answer: 3, // {1} ∪ {2} = {1,2}
     hint: 'Join in the power set = union. What\'s the smallest set containing both {1} and {2}?',
     notationReveal: '{1} ∨ {2} = {1,2}\n\nJoin in P(X) = union\n(A ∨ B = A ∪ B)',
+  ),
+
+  // Exercise 1.7: more boolean cases (spiral back)
+  MeetJoinPickConfig(
+    id: 'mj5-bool-tt',
+    title: 'OR²',
+    subtitle: null,
+    elementLabels: const ['false', 'true'],
+    positions: const [
+      Offset(0.5, 0.7),
+      Offset(0.5, 0.3),
+    ],
+    edges: {(0, 1)},
+    highlighted: (1, 1), // true and true
+    operation: MeetOrJoin.join,
+    answer: 1, // true ∨ true = true
+    hint: 'What\'s true ∨ true? Remember: p ∨ p = p always.',
+    notationReveal: 'true ∨ true = true\n\np ∨ p = p (idempotent)\nfor any element in any lattice',
+  ),
+  MeetJoinPickConfig(
+    id: 'mj6-bool-ff',
+    title: 'AND²',
+    subtitle: null,
+    elementLabels: const ['false', 'true'],
+    positions: const [
+      Offset(0.5, 0.7),
+      Offset(0.5, 0.3),
+    ],
+    edges: {(0, 1)},
+    highlighted: (0, 0), // false and false
+    operation: MeetOrJoin.meet,
+    answer: 0, // false ∧ false = false
+    hint: 'What\'s false ∧ false?',
+    notationReveal: 'false ∧ false = false\n\np ∧ p = p (idempotent)\nMeet with yourself = yourself',
+  ),
+
+  // Meet/join in the cube P({1,2,3})
+  MeetJoinPickConfig(
+    id: 'mj7-cube-meet',
+    title: 'FILTER',
+    subtitle: null,
+    elementLabels: const ['∅', '{1}', '{2}', '{3}', '{1,2}', '{1,3}', '{2,3}', 'X'],
+    positions: const [
+      Offset(0.5, 0.88),
+      Offset(0.2, 0.65),
+      Offset(0.5, 0.65),
+      Offset(0.8, 0.65),
+      Offset(0.2, 0.38),
+      Offset(0.5, 0.38),
+      Offset(0.8, 0.38),
+      Offset(0.5, 0.12),
+    ],
+    edges: {(0,1),(0,2),(0,3),(1,4),(1,5),(2,4),(2,6),(3,5),(3,6),(4,7),(5,7),(6,7)},
+    highlighted: (4, 6), // {1,2} and {2,3}
+    operation: MeetOrJoin.meet,
+    answer: 2, // {1,2} ∩ {2,3} = {2}
+    hint: 'Meet in a power set = intersection. What elements do {1,2} and {2,3} share?',
+    notationReveal: '{1,2} ∧ {2,3} = {2}\n\nIntersection in the cube!',
+  ),
+  MeetJoinPickConfig(
+    id: 'mj8-cube-join',
+    title: 'UNION',
+    subtitle: null,
+    elementLabels: const ['∅', '{1}', '{2}', '{3}', '{1,2}', '{1,3}', '{2,3}', 'X'],
+    positions: const [
+      Offset(0.5, 0.88),
+      Offset(0.2, 0.65),
+      Offset(0.5, 0.65),
+      Offset(0.8, 0.65),
+      Offset(0.2, 0.38),
+      Offset(0.5, 0.38),
+      Offset(0.8, 0.38),
+      Offset(0.5, 0.12),
+    ],
+    edges: {(0,1),(0,2),(0,3),(1,4),(1,5),(2,4),(2,6),(3,5),(3,6),(4,7),(5,7),(6,7)},
+    highlighted: (1, 3), // {1} and {3}
+    operation: MeetOrJoin.join,
+    answer: 5, // {1} ∪ {3} = {1,3}
+    hint: 'Join in a power set = union. What\'s the smallest set containing both {1} and {3}?',
+    notationReveal: '{1} ∨ {3} = {1,3}\n\nUnion in the cube!',
+  ),
+
+  // Harder divisibility: meet where answer isn't obvious
+  MeetJoinPickConfig(
+    id: 'mj9-gcd2',
+    title: 'GCD²',
+    subtitle: null,
+    elementLabels: const ['1', '2', '3', '4', '5', '6'],
+    positions: const [
+      Offset(0.5, 0.85),
+      Offset(0.25, 0.6),
+      Offset(0.5, 0.6),
+      Offset(0.15, 0.35),
+      Offset(0.75, 0.6),
+      Offset(0.4, 0.35),
+    ],
+    edges: {(0,1),(0,2),(0,4),(1,3),(1,5),(2,5)},
+    highlighted: (3, 4), // 4 and 5
+    operation: MeetOrJoin.meet,
+    answer: 0, // GCD(4,5) = 1
+    hint: 'Meet = greatest common divisor. What divides both 4 and 5?',
+    notationReveal: '4 ∧ 5 = 1\n\nCoprime! Their only common\ndivisor is 1 (the bottom)',
+  ),
+  MeetJoinPickConfig(
+    id: 'mj10-lcm2',
+    title: 'LCM²',
+    subtitle: null,
+    elementLabels: const ['1', '2', '3', '4', '5', '6'],
+    positions: const [
+      Offset(0.5, 0.85),
+      Offset(0.25, 0.6),
+      Offset(0.5, 0.6),
+      Offset(0.15, 0.35),
+      Offset(0.75, 0.6),
+      Offset(0.4, 0.35),
+    ],
+    edges: {(0,1),(0,2),(0,4),(1,3),(1,5),(2,5)},
+    highlighted: (1, 5), // 2 and 6
+    operation: MeetOrJoin.join,
+    answer: 5, // LCM(2,6) = 6
+    hint: 'Join = least common multiple. What\'s the smallest number both 2 and 6 divide into?',
+    notationReveal: '2 ∨ 6 = 6\n\nSince 2 divides 6, we have\n2 ≤ 6, so 2 ∨ 6 = 6\n(join with something above = it)',
   ),
 ];
 
