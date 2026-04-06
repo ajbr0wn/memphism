@@ -101,6 +101,33 @@ class _PartitionScreenState extends State<PartitionScreen>
 
   Partition get _currentPartition => Partition.fromElements(_elements);
 
+  /// Normalize colors by STRUCTURE: smallest group gets color 0,
+  /// next smallest gets color 1, etc. Within same size, the group
+  /// containing the earliest element gets the lower color.
+  /// This way "one alone, three together" ALWAYS looks the same
+  /// regardless of which element is alone.
+  void _normalizeByStructure() {
+    // Collect groups
+    final groups = <int, List<int>>{}; // groupIndex -> list of element indices
+    for (var i = 0; i < _elements.length; i++) {
+      groups.putIfAbsent(_elements[i].groupIndex, () => []).add(i);
+    }
+
+    // Sort groups: smallest first, then by earliest element
+    final sortedGroups = groups.values.toList()
+      ..sort((a, b) {
+        if (a.length != b.length) return a.length.compareTo(b.length);
+        return a.first.compareTo(b.first);
+      });
+
+    // Reassign colors
+    for (var gi = 0; gi < sortedGroups.length; gi++) {
+      for (final ei in sortedGroups[gi]) {
+        _elements[ei] = _elements[ei].copyWith(groupIndex: gi);
+      }
+    }
+  }
+
   void _onTapElement(String id) {
     if (_levelComplete) return;
 
@@ -110,6 +137,7 @@ class _PartitionScreenState extends State<PartitionScreen>
       _elements[idx] = _elements[idx].copyWith(
         groupIndex: (_elements[idx].groupIndex + 1) % _maxGroups,
       );
+      _normalizeByStructure();
     });
     Haptics.tap();
   }
@@ -127,6 +155,7 @@ class _PartitionScreenState extends State<PartitionScreen>
           _elements[idx] = _elements[idx].copyWith(groupIndex: groupIdx);
         }
       }
+      _normalizeByStructure();
     });
   }
 

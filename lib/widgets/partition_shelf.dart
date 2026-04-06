@@ -100,10 +100,18 @@ class _PartitionThumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Assign colors to groups
+    // Assign colors to groups — normalized by structure:
+    // smallest group gets color 0, then by earliest element.
+    final sortedParts = partition.parts.toList()
+      ..sort((a, b) {
+        if (a.length != b.length) return a.length.compareTo(b.length);
+        final aMin = (a.toList()..sort()).first;
+        final bMin = (b.toList()..sort()).first;
+        return aMin.compareTo(bMin);
+      });
     final colorMap = <String, int>{};
-    for (var gi = 0; gi < partition.parts.length; gi++) {
-      for (final id in partition.parts[gi]) {
+    for (var gi = 0; gi < sortedParts.length; gi++) {
+      for (final id in sortedParts[gi]) {
         colorMap[id] = gi;
       }
     }
