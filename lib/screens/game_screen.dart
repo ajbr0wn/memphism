@@ -209,28 +209,35 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
+  String? _findNodeAt(Offset position, Size size) {
+    for (final obj in _objects) {
+      final pos = _objectPosition(obj.id, size);
+      if ((position - pos).distance < 48) return obj.id;
+    }
+    return null;
+  }
+
   Widget _buildCanvas() {
     return LayoutBuilder(
       builder: (context, constraints) {
         final size = constraints.biggest;
 
         return GestureDetector(
+          onPanStart: (details) {
+            final nodeId = _findNodeAt(details.localPosition, size);
+            if (nodeId != null) {
+              _onDragStart(nodeId);
+              _onDragUpdate(details.localPosition);
+            }
+          },
           onPanUpdate: (details) {
             if (_dragSourceId != null) {
               _onDragUpdate(details.localPosition);
             }
           },
           onPanEnd: (_) {
-            if (_dragSourceId != null) {
-              // Find if we're near a target node
-              String? targetId;
-              for (final obj in _objects) {
-                final pos = _objectPosition(obj.id, size);
-                if ((_dragPosition! - pos).distance < 48) {
-                  targetId = obj.id;
-                  break;
-                }
-              }
+            if (_dragSourceId != null && _dragPosition != null) {
+              final targetId = _findNodeAt(_dragPosition!, size);
               _onDragEnd(targetId);
             }
           },
@@ -288,14 +295,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                       Positioned(
                         left: obj.x * size.width - 32,
                         top: obj.y * size.height - 32,
-                        child: GestureDetector(
-                          onPanStart: (_) => _onDragStart(obj.id),
-                          child: NodeWidget(
-                            label: obj.label,
-                            colorIndex: obj.colorIndex,
-                            active: _dragSourceId == obj.id,
-                            pulsing: _levelComplete,
-                          ),
+                        child: NodeWidget(
+                          label: obj.label,
+                          colorIndex: obj.colorIndex,
+                          active: _dragSourceId == obj.id,
+                          pulsing: _levelComplete,
                         ),
                       ),
                   ],
