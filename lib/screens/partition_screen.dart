@@ -57,7 +57,8 @@ class PartitionScreen extends StatefulWidget {
   State<PartitionScreen> createState() => _PartitionScreenState();
 }
 
-class _PartitionScreenState extends State<PartitionScreen> {
+class _PartitionScreenState extends State<PartitionScreen>
+    with SingleTickerProviderStateMixin {
   late List<SetElement> _elements;
   final List<Partition> _collectedPartitions = [];
   late List<Partition> _allPossible;
@@ -65,6 +66,9 @@ class _PartitionScreenState extends State<PartitionScreen> {
   String? _notationReveal;
   bool _showNotation = false;
   int _maxGroups = 1;
+  int _nextGroupIndex = 1;
+
+  late AnimationController _pulseController;
 
   @override
   void initState() {
@@ -79,6 +83,17 @@ class _PartitionScreenState extends State<PartitionScreen> {
     ));
     _allPossible = allPartitions(labels);
     _maxGroups = labels.length;
+
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
   }
 
   Partition get _currentPartition => Partition.fromElements(_elements);
@@ -94,6 +109,23 @@ class _PartitionScreenState extends State<PartitionScreen> {
       );
     });
     Haptics.tap();
+  }
+
+  void _onLassoGroup(Set<String> elementIds) {
+    if (_levelComplete) return;
+    if (elementIds.length < 2) return;
+
+    setState(() {
+      // Assign all lassoed elements to the same group
+      final groupIdx = _nextGroupIndex % _maxGroups;
+      _nextGroupIndex++;
+      for (final id in elementIds) {
+        final idx = _elements.indexWhere((e) => e.id == id);
+        if (idx >= 0) {
+          _elements[idx] = _elements[idx].copyWith(groupIndex: groupIdx);
+        }
+      }
+    });
   }
 
   void _submitPartition() {
@@ -180,9 +212,14 @@ class _PartitionScreenState extends State<PartitionScreen> {
                 ),
               ),
             Expanded(
-              child: PartitionCanvas(
-                elements: _elements,
-                onTapElement: _onTapElement,
+              child: AnimatedBuilder(
+                animation: _pulseController,
+                builder: (context, _) => PartitionCanvas(
+                  elements: _elements,
+                  onTapElement: _onTapElement,
+                  onLassoGroup: _onLassoGroup,
+                  pulsePhase: _pulseController.value,
+                ),
               ),
             ),
             if (!_levelComplete) _buildControls(),
