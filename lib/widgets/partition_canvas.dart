@@ -98,6 +98,7 @@ class _PartitionCanvasState extends State<PartitionCanvas> {
                     child: _ElementDot(
                       label: e.label,
                       colorIndex: e.groupIndex,
+                      shape: e.shape,
                       highlighted: _lassoHighlighted.contains(e.id),
                     ),
                   ),
@@ -149,55 +150,150 @@ class _PartitionCanvasState extends State<PartitionCanvas> {
 
 class _ElementDot extends StatelessWidget {
   final String label;
-  final int colorIndex;
+  final int colorIndex; // group color
+  final ElementShape shape;
   final bool highlighted;
 
   const _ElementDot({
     required this.label,
     required this.colorIndex,
+    required this.shape,
     this.highlighted = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final color = Palette.nodeColor(colorIndex);
+    final size = highlighted ? 64.0 : 56.0;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      width: highlighted ? 64 : 56,
-      height: highlighted ? 64 : 56,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: highlighted
-            ? color.withValues(alpha: 0.15)
-            : Palette.bgCard,
-        border: Border.all(
+      width: size,
+      height: size,
+      child: CustomPaint(
+        painter: _ShapePainter(
           color: color,
-          width: highlighted ? 3 : 2.5,
+          shape: shape,
+          highlighted: highlighted,
         ),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(alpha: highlighted ? 0.6 : 0.4),
-            blurRadius: highlighted ? 24 : 16,
-            spreadRadius: highlighted ? 4 : 2,
-          ),
-        ],
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: TextStyle(
-            color: color,
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            shadows: [
-              Shadow(color: color.withValues(alpha: 0.8), blurRadius: 8),
-            ],
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Palette.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              shadows: [
+                Shadow(color: color.withValues(alpha: 0.6), blurRadius: 6),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+class _ShapePainter extends CustomPainter {
+  final Color color;
+  final ElementShape shape;
+  final bool highlighted;
+
+  _ShapePainter({
+    required this.color,
+    required this.shape,
+    required this.highlighted,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2 - 2;
+
+    // Glow
+    final glowPaint = Paint()
+      ..color = color.withValues(alpha: highlighted ? 0.5 : 0.3)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, highlighted ? 16 : 10);
+    _drawShape(canvas, center, radius + 4, glowPaint);
+
+    // Fill
+    final fillPaint = Paint()
+      ..color = Palette.bgCard
+      ..style = PaintingStyle.fill;
+    _drawShape(canvas, center, radius, fillPaint);
+
+    // Border
+    final borderPaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = highlighted ? 3 : 2.5;
+    _drawShape(canvas, center, radius, borderPaint);
+  }
+
+  void _drawShape(Canvas canvas, Offset center, double radius, Paint paint) {
+    switch (shape) {
+      case ElementShape.circle:
+        canvas.drawCircle(center, radius, paint);
+      case ElementShape.square:
+        final rect = Rect.fromCenter(
+          center: center,
+          width: radius * 1.6,
+          height: radius * 1.6,
+        );
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(rect, Radius.circular(radius * 0.2)),
+          paint,
+        );
+      case ElementShape.triangle:
+        final path = Path();
+        for (var i = 0; i < 3; i++) {
+          final angle = (i * 2 * math.pi / 3) - math.pi / 2;
+          final x = center.dx + radius * math.cos(angle);
+          final y = center.dy + radius * math.sin(angle);
+          if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
+        }
+        path.close();
+        canvas.drawPath(path, paint);
+      case ElementShape.diamond:
+        final path = Path()
+          ..moveTo(center.dx, center.dy - radius)
+          ..lineTo(center.dx + radius * 0.75, center.dy)
+          ..lineTo(center.dx, center.dy + radius)
+          ..lineTo(center.dx - radius * 0.75, center.dy)
+          ..close();
+        canvas.drawPath(path, paint);
+      case ElementShape.star:
+        final path = Path();
+        for (var i = 0; i < 5; i++) {
+          final outerAngle = (i * 2 * math.pi / 5) - math.pi / 2;
+          final innerAngle = outerAngle + math.pi / 5;
+          final ox = center.dx + radius * math.cos(outerAngle);
+          final oy = center.dy + radius * math.sin(outerAngle);
+          final ix = center.dx + radius * 0.45 * math.cos(innerAngle);
+          final iy = center.dy + radius * 0.45 * math.sin(innerAngle);
+          if (i == 0) path.moveTo(ox, oy); else path.lineTo(ox, oy);
+          path.lineTo(ix, iy);
+        }
+        path.close();
+        canvas.drawPath(path, paint);
+      case ElementShape.hexagon:
+        final path = Path();
+        for (var i = 0; i < 6; i++) {
+          final angle = (i * 2 * math.pi / 6) - math.pi / 6;
+          final x = center.dx + radius * math.cos(angle);
+          final y = center.dy + radius * math.sin(angle);
+          if (i == 0) path.moveTo(x, y); else path.lineTo(x, y);
+        }
+        path.close();
+        canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ShapePainter oldDelegate) =>
+      color != oldDelegate.color ||
+      shape != oldDelegate.shape ||
+      highlighted != oldDelegate.highlighted;
 }
 
 /// Paints group membranes and the active lasso path.

@@ -1,8 +1,12 @@
 // A partition of a set — elements grouped into non-overlapping parts.
 
+/// Shapes that give each element a distinct visual identity.
+enum ElementShape { circle, star, square, triangle, diamond, hexagon }
+
 class SetElement {
   final String id;
   final String label;
+  final int shapeIndex; // visual identity (fixed per element)
   final double x;
   final double y;
   int groupIndex; // which group this element belongs to (0-based)
@@ -10,14 +14,19 @@ class SetElement {
   SetElement({
     required this.id,
     required this.label,
+    this.shapeIndex = 0,
     required this.x,
     required this.y,
     this.groupIndex = 0,
   });
 
+  ElementShape get shape =>
+      ElementShape.values[shapeIndex % ElementShape.values.length];
+
   SetElement copyWith({int? groupIndex}) => SetElement(
         id: id,
         label: label,
+        shapeIndex: shapeIndex,
         x: x,
         y: y,
         groupIndex: groupIndex ?? this.groupIndex,

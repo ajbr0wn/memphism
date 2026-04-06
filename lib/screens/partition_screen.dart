@@ -79,6 +79,7 @@ class _PartitionScreenState extends State<PartitionScreen>
     _elements = List.generate(labels.length, (i) => SetElement(
       id: labels[i],
       label: labels[i],
+      shapeIndex: i,
       x: widget.config.positions[i].dx,
       y: widget.config.positions[i].dy,
       groupIndex: 0,
@@ -100,20 +101,6 @@ class _PartitionScreenState extends State<PartitionScreen>
 
   Partition get _currentPartition => Partition.fromElements(_elements);
 
-  /// Normalize group indices so the same partition always looks the same.
-  /// First element's group becomes 0, next distinct group becomes 1, etc.
-  void _normalizeGroups() {
-    final remap = <int, int>{};
-    var nextIdx = 0;
-    for (var i = 0; i < _elements.length; i++) {
-      final oldGroup = _elements[i].groupIndex;
-      if (!remap.containsKey(oldGroup)) {
-        remap[oldGroup] = nextIdx++;
-      }
-      _elements[i] = _elements[i].copyWith(groupIndex: remap[oldGroup]!);
-    }
-  }
-
   void _onTapElement(String id) {
     if (_levelComplete) return;
 
@@ -123,7 +110,6 @@ class _PartitionScreenState extends State<PartitionScreen>
       _elements[idx] = _elements[idx].copyWith(
         groupIndex: (_elements[idx].groupIndex + 1) % _maxGroups,
       );
-      _normalizeGroups();
     });
     Haptics.tap();
   }
@@ -133,7 +119,6 @@ class _PartitionScreenState extends State<PartitionScreen>
     if (elementIds.length < 2) return;
 
     setState(() {
-      // Assign all lassoed elements to the same group
       final groupIdx = _nextGroupIndex % _maxGroups;
       _nextGroupIndex++;
       for (final id in elementIds) {
@@ -142,7 +127,6 @@ class _PartitionScreenState extends State<PartitionScreen>
           _elements[idx] = _elements[idx].copyWith(groupIndex: groupIdx);
         }
       }
-      _normalizeGroups();
     });
   }
 

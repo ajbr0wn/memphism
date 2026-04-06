@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/partition.dart';
 import '../theme/palette.dart';
@@ -123,29 +124,10 @@ class _PartitionThumb extends StatelessWidget {
           ),
         ],
       ),
-      child: Center(
-        child: Wrap(
-          spacing: 2,
-          runSpacing: 2,
-          alignment: WrapAlignment.center,
-          children: [
-            for (final id in elementIds)
-              Container(
-                width: elementIds.length <= 3 ? 10 : 7,
-                height: elementIds.length <= 3 ? 10 : 7,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Palette.nodeColor(colorMap[id] ?? 0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Palette.nodeColor(colorMap[id] ?? 0)
-                          .withValues(alpha: 0.5),
-                      blurRadius: 3,
-                    ),
-                  ],
-                ),
-              ),
-          ],
+      child: CustomPaint(
+        painter: _ThumbShapePainter(
+          elementIds: elementIds,
+          colorMap: colorMap,
         ),
       ),
     );
@@ -173,4 +155,88 @@ class _EmptyThumb extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Draws tiny shapes in the thumbnail, colored by group.
+class _ThumbShapePainter extends CustomPainter {
+  final List<String> elementIds;
+  final Map<String, int> colorMap;
+
+  _ThumbShapePainter({required this.elementIds, required this.colorMap});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final count = elementIds.length;
+    final dotSize = count <= 3 ? 5.0 : 4.0;
+    final cols = count <= 2 ? count : 2;
+    final rows = (count / cols).ceil();
+    final spacingX = size.width / (cols + 1);
+    final spacingY = size.height / (rows + 1);
+
+    for (var i = 0; i < count; i++) {
+      final col = i % cols;
+      final row = i ~/ cols;
+      final center = Offset(
+        (col + 1) * spacingX,
+        (row + 1) * spacingY,
+      );
+      final color = Palette.nodeColor(colorMap[elementIds[i]] ?? 0);
+      final paint = Paint()..color = color;
+
+      switch (i % 6) {
+        case 0: // circle
+          canvas.drawCircle(center, dotSize, paint);
+        case 1: // star (draw as small filled star)
+          final path = Path();
+          for (var p = 0; p < 5; p++) {
+            final outerA = (p * 2 * math.pi / 5) - math.pi / 2;
+            final innerA = outerA + math.pi / 5;
+            final ox = center.dx + dotSize * math.cos(outerA);
+            final oy = center.dy + dotSize * math.sin(outerA);
+            final ix = center.dx + dotSize * 0.4 * math.cos(innerA);
+            final iy = center.dy + dotSize * 0.4 * math.sin(innerA);
+            if (p == 0) path.moveTo(ox, oy); else path.lineTo(ox, oy);
+            path.lineTo(ix, iy);
+          }
+          path.close();
+          canvas.drawPath(path, paint);
+        case 2: // square
+          canvas.drawRect(
+            Rect.fromCenter(center: center, width: dotSize * 1.6, height: dotSize * 1.6),
+            paint,
+          );
+        case 3: // triangle
+          final path = Path();
+          for (var p = 0; p < 3; p++) {
+            final a = (p * 2 * math.pi / 3) - math.pi / 2;
+            final x = center.dx + dotSize * math.cos(a);
+            final y = center.dy + dotSize * math.sin(a);
+            if (p == 0) path.moveTo(x, y); else path.lineTo(x, y);
+          }
+          path.close();
+          canvas.drawPath(path, paint);
+        case 4: // diamond
+          final path = Path()
+            ..moveTo(center.dx, center.dy - dotSize)
+            ..lineTo(center.dx + dotSize * 0.7, center.dy)
+            ..lineTo(center.dx, center.dy + dotSize)
+            ..lineTo(center.dx - dotSize * 0.7, center.dy)
+            ..close();
+          canvas.drawPath(path, paint);
+        case 5: // hexagon
+          final path = Path();
+          for (var p = 0; p < 6; p++) {
+            final a = (p * 2 * math.pi / 6) - math.pi / 6;
+            final x = center.dx + dotSize * math.cos(a);
+            final y = center.dy + dotSize * math.sin(a);
+            if (p == 0) path.moveTo(x, y); else path.lineTo(x, y);
+          }
+          path.close();
+          canvas.drawPath(path, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ThumbShapePainter oldDelegate) => true;
 }
