@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../engine/partition_levels.dart';
+import '../engine/chapter1_levels.dart';
+import '../screens/join_screen.dart';
+import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
 import '../theme/palette.dart';
 
@@ -14,24 +16,43 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
   int _unlockedUpTo = 0;
 
   void _playLevel(int index) {
+    final level = ch1AllLevels[index];
+
+    Widget screen;
+    switch (level.type) {
+      case Ch1LevelType.partition:
+        screen = PartitionScreen(
+          config: partitionLevels[level.index],
+          onComplete: () => _onComplete(index),
+        );
+      case Ch1LevelType.ordering:
+        screen = OrderingScreen(
+          config: orderingLevels[level.index],
+          onComplete: () => _onComplete(index),
+        );
+      case Ch1LevelType.join:
+        screen = JoinScreen(
+          config: joinLevels[level.index],
+          onComplete: () => _onComplete(index),
+        );
+    }
+
     Navigator.of(context).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            PartitionScreen(
-          config: ch1PartitionLevels[index],
-          onComplete: () {
-            if (index >= _unlockedUpTo) {
-              setState(() => _unlockedUpTo = index + 1);
-            }
-            Navigator.of(context).pop();
-          },
-        ),
+        pageBuilder: (context, animation, secondaryAnimation) => screen,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(opacity: animation, child: child);
         },
         transitionDuration: const Duration(milliseconds: 400),
       ),
     );
+  }
+
+  void _onComplete(int index) {
+    if (index >= _unlockedUpTo) {
+      setState(() => _unlockedUpTo = index + 1);
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -60,7 +81,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
             Padding(
               padding: const EdgeInsets.fromLTRB(28, 0, 28, 32),
               child: Text(
-                'CHAPTER 1: PARTITIONS',
+                'CHAPTER 1: ORDERS & PARTITIONS',
                 style: TextStyle(
                   color: Palette.textDim,
                   fontSize: 12,
@@ -72,18 +93,18 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                itemCount: ch1PartitionLevels.length,
+                itemCount: ch1AllLevels.length,
                 itemBuilder: (context, index) {
-                  final level = ch1PartitionLevels[index];
+                  final level = ch1AllLevels[index];
                   final unlocked = index <= _unlockedUpTo;
                   final completed = index < _unlockedUpTo;
-                  final isBoss = index == ch1PartitionLevels.length - 1;
                   return _LevelCard(
                     title: level.title,
                     index: index,
                     unlocked: unlocked,
                     completed: completed,
-                    isBoss: isBoss,
+                    isBoss: level.isBoss,
+                    levelType: level.type,
                     onTap: unlocked ? () => _playLevel(index) : null,
                   );
                 },
@@ -102,6 +123,7 @@ class _LevelCard extends StatelessWidget {
   final bool unlocked;
   final bool completed;
   final bool isBoss;
+  final Ch1LevelType levelType;
   final VoidCallback? onTap;
 
   const _LevelCard({
@@ -110,6 +132,7 @@ class _LevelCard extends StatelessWidget {
     required this.unlocked,
     required this.completed,
     this.isBoss = false,
+    required this.levelType,
     this.onTap,
   });
 
@@ -120,6 +143,13 @@ class _LevelCard extends StatelessWidget {
         : unlocked
             ? Palette.nodeColor(index)
             : Palette.textDim.withValues(alpha: 0.3);
+
+    // Type indicator
+    final typeIcon = switch (levelType) {
+      Ch1LevelType.partition => Icons.grid_view_rounded,
+      Ch1LevelType.ordering => Icons.swap_vert,
+      Ch1LevelType.join => Icons.merge_type,
+    };
 
     return GestureDetector(
       onTap: onTap,
@@ -177,6 +207,11 @@ class _LevelCard extends StatelessWidget {
                 letterSpacing: 2,
               ),
             ),
+            const SizedBox(width: 8),
+            Icon(typeIcon, size: 16,
+                color: unlocked
+                    ? color.withValues(alpha: 0.4)
+                    : Palette.textDim.withValues(alpha: 0.15)),
             const Spacer(),
             if (unlocked && !completed)
               Icon(
