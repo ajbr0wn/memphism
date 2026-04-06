@@ -106,6 +106,8 @@ class HasseView extends StatelessWidget {
   }
 }
 
+/// Hasse node showing a partition as grouped dots with enclosures,
+/// similar to the textbook style.
 class _PartitionNode extends StatelessWidget {
   final Partition partition;
   final List<String> elementIds;
@@ -117,16 +119,26 @@ class _PartitionNode extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Normalize colors by structure (same as canvas)
+    final sortedParts = partition.parts.toList()
+      ..sort((a, b) {
+        if (a.length != b.length) return a.length.compareTo(b.length);
+        final aMin = (a.toList()..sort()).first;
+        final bMin = (b.toList()..sort()).first;
+        return aMin.compareTo(bMin);
+      });
     final colorMap = <String, int>{};
-    for (var gi = 0; gi < partition.parts.length; gi++) {
-      for (final id in partition.parts[gi]) {
+    for (var gi = 0; gi < sortedParts.length; gi++) {
+      for (final id in sortedParts[gi]) {
         colorMap[id] = gi;
       }
     }
 
+    final nodeSize = elementIds.length <= 3 ? 52.0 : 56.0;
+
     return Container(
-      width: 48,
-      height: 48,
+      width: nodeSize,
+      height: nodeSize,
       decoration: BoxDecoration(
         color: Palette.bgCard,
         borderRadius: BorderRadius.circular(10),
@@ -140,33 +152,133 @@ class _PartitionNode extends StatelessWidget {
           ),
         ],
       ),
-      child: Center(
-        child: Wrap(
-          spacing: 2,
-          runSpacing: 2,
-          alignment: WrapAlignment.center,
-          children: [
-            for (final id in elementIds)
-              Container(
-                width: elementIds.length <= 3 ? 10 : 7,
-                height: elementIds.length <= 3 ? 10 : 7,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Palette.nodeColor(colorMap[id] ?? 0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Palette.nodeColor(colorMap[id] ?? 0)
-                          .withValues(alpha: 0.5),
-                      blurRadius: 3,
-                    ),
-                  ],
-                ),
-              ),
-          ],
+      child: CustomPaint(
+        painter: _HasseNodePainter(
+          elementIds: elementIds,
+          colorMap: colorMap,
+          sortedParts: sortedParts,
         ),
       ),
     );
   }
+}
+
+/// Draws partition dots with enclosing curves around groups,
+/// like the textbook diagrams.
+class _HasseNodePainter extends CustomPainter {
+  final List<String> elementIds;
+  final Map<String, int> colorMap;
+  final List<Set<String>> sortedParts;
+
+  _HasseNodePainter({
+    required this.elementIds,
+    required this.colorMap,
+    required this.sortedParts,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final count = elementIds.length;
+    final dotSize = count <= 3 ? 5.0 : 4.0;
+    final cols = count <= 2 ? count : 2;
+    final rows = (count / cols).ceil();
+    final spacingX = size.width / (cols + 1);
+    final spacingY = size.height / (rows + 1);
+
+    // Position each element
+    final positions = <String, Offset>{};
+    for (var i = 0; i < count; i++) {
+      final col = i % cols;
+      final row = i ~/ cols;
+      positions[elementIds[i]] = Offset(
+        (col + 1) * spacingX,
+        (row + 1) * spacingY,
+      );
+    }
+
+    // Draw enclosing curves around groups with > 1 element
+    for (var gi = 0; gi < sortedParts.length; gi++) {
+      final group = sortedParts[gi];
+      if (group.length < 2) continue;
+
+      final color = Palette.nodeColor(gi);
+      final groupPositions = group.map((id) => positions[id]!).toList();
+
+      // Draw enclosing rounded rect around the group
+      var minX = double.infinity, minY = double.infinity;
+      var maxX = double.negativeInfinity, maxY = double.negativeInfinity;
+      for (final p in groupPositions) {
+        if (p.dx < minX) minX = p.dx;
+        if (p.dy < minY) minY = p.dy;
+        if (p.dx > maxX) maxX = p.dx;
+        if (p.dy > maxY) maxY = p.dy;
+      }
+      final enclosePaint = Paint()
+        ..color = color.withValues(alpha: 0.15)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTRB(
+            minX - dotSize - 3,
+            minY - dotSize - 3,
+            maxX + dotSize + 3,
+            maxY + dotSize + 3,
+          ),
+          const Radius.circular(6),
+        ),
+        enclosePaint,
+      );
+    }
+
+    // Draw dots with shapes
+    for (var i = 0; i < count; i++) {
+      final id = elementIds[i];
+      final center = positions[id]!;
+      final color = Palette.nodeColor(colorMap[id] ?? 0);
+      final paint = Paint()..color = color;
+
+      // Use shape index based on element position
+      switch (i % 6) {
+        case 0:
+          canvas.drawCircle(center, dotSize, paint);
+        case 1:
+          final path = Path();
+          for (var p = 0; p < 5; p++) {
+            final outerA = (p * 2 * math.pi / 5) - math.pi / 2;
+            final innerA = outerA + math.pi / 5;
+            final ox = center.dx + dotSize * math.cos(outerA);
+            final oy = center.dy + dotSize * math.sin(outerA);
+            final ix = center.dx + dotSize * 0.4 * math.cos(innerA);
+            final iy = center.dy + dotSize * 0.4 * math.sin(innerA);
+            if (p == 0) { path.moveTo(ox, oy); } else { path.lineTo(ox, oy); }
+            path.lineTo(ix, iy);
+          }
+          path.close();
+          canvas.drawPath(path, paint);
+        case 2:
+          canvas.drawRect(
+            Rect.fromCenter(center: center, width: dotSize * 1.6, height: dotSize * 1.6),
+            paint,
+          );
+        case 3:
+          final path = Path();
+          for (var p = 0; p < 3; p++) {
+            final a = (p * 2 * math.pi / 3) - math.pi / 2;
+            final x = center.dx + dotSize * math.cos(a);
+            final y = center.dy + dotSize * math.sin(a);
+            if (p == 0) { path.moveTo(x, y); } else { path.lineTo(x, y); }
+          }
+          path.close();
+          canvas.drawPath(path, paint);
+        default:
+          canvas.drawCircle(center, dotSize, paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_HasseNodePainter oldDelegate) => true;
 }
 
 class _HassePainter extends CustomPainter {
