@@ -53,17 +53,9 @@ class _OrderingScreenState extends State<OrderingScreen> {
   }
 
   bool _isCorrectOrder() {
-    // Correct order: coarsest (fewest parts) at top, finest at bottom
-    for (var i = 0; i < _slots.length - 1; i++) {
-      if (!_slots[i + 1].isFinerOrEqual(_slots[i])) return false;
-      // Also ensure they're not equal (strict ordering at each step)
-      if (_slots[i].isFinerOrEqual(_slots[i + 1]) &&
-          _slots[i + 1].isFinerOrEqual(_slots[i])) {
-        // They're equal — that's OK for same-level items
-        // But we need same-level items grouped
-      }
-    }
-    // Simpler check: sort by numParts ascending
+    // Correct order: coarsest (fewest parts) at top, finest at bottom.
+    // Incomparable partitions (same numParts) can appear in any order
+    // within their layer — this is a partial order, not a total one.
     for (var i = 0; i < _slots.length - 1; i++) {
       if (_slots[i].numParts > _slots[i + 1].numParts) return false;
     }
