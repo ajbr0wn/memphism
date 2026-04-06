@@ -4,6 +4,7 @@ import '../engine/chapter1_levels.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
+import '../screens/monotone_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
 import '../screens/preorder_screen.dart';
@@ -70,6 +71,11 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
       case Ch1LevelType.meetJoinPick:
         screen = MeetJoinPickScreen(
           config: meetJoinPickLevels[level.index],
+          onComplete: () => _onComplete(index),
+        );
+      case Ch1LevelType.monotone:
+        screen = MonotoneScreen(
+          config: monotoneLevels[level.index],
           onComplete: () => _onComplete(index),
         );
     }
@@ -190,6 +196,7 @@ class _LevelCard extends StatelessWidget {
       Ch1LevelType.function_ => Icons.arrow_forward,
       Ch1LevelType.preorder => Icons.account_tree,
       Ch1LevelType.meetJoinPick => Icons.compress,
+      Ch1LevelType.monotone => Icons.trending_up,
     };
 
     return GestureDetector(

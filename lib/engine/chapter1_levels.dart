@@ -3,6 +3,7 @@ import '../models/partition.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
+import '../screens/monotone_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
 import '../screens/preorder_screen.dart';
@@ -661,8 +662,95 @@ final meetJoinPickLevels = [
   ),
 ];
 
+// ── Monotone map levels (Section 1.2.3, Def 1.59) ──
+
+final monotoneLevels = [
+  // Bool → Bool: only 4 possible maps, 3 are monotone
+  MonotoneLevelConfig(
+    id: 'mon1-bool',
+    title: 'PRESERVE',
+    subtitle: 'Draw f: Bool → Bool that preserves order.\nIf a ≤ b then f(a) ≤ f(b).',
+    domainLabels: const ['F', 'T'],
+    domainPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    domainEdges: {(0, 1)},
+    codomainLabels: const ['F', 'T'],
+    codomainPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    codomainEdges: {(0, 1)},
+    hint: 'F ≤ T, so f(F) ≤ f(T) must hold. Which maps work? Try: both to T, or F→F and T→T.',
+    notationReveal: 'There are 3 monotone maps Bool → Bool:\nF↦F,T↦T (identity)\nF↦F,T↦F (constant false)\nF↦T,T↦T (constant true)\n\nOnly F↦T,T↦F breaks order!',
+  ),
+
+  // 3-chain → 2-chain: which maps preserve order?
+  MonotoneLevelConfig(
+    id: 'mon2-chain',
+    title: 'SQUEEZE',
+    subtitle: 'Map a 3-chain into a 2-chain, preserving order.',
+    domainLabels: const ['1', '2', '3'],
+    domainPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    domainEdges: {(0, 1), (1, 2)},
+    codomainLabels: const ['a', 'b'],
+    codomainPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    codomainEdges: {(0, 1)},
+    hint: '1 ≤ 2 ≤ 3, so f(1) ≤ f(2) ≤ f(3). Since a ≤ b, the only constraint is: no "going down."',
+    notationReveal: 'f : 3 → 2 monotone\n\nThere are 3 monotone maps:\naaa, aab, abb\n(where the "jump" from a to b\ncan happen at any point)',
+  ),
+
+  // Diamond (P({1,2})) → 2-chain: nontrivial constraint
+  MonotoneLevelConfig(
+    id: 'mon3-diamond',
+    title: 'FLATTEN',
+    subtitle: 'Map the diamond into a 3-chain, preserving order.',
+    domainLabels: const ['⊥', 'L', 'R', '⊤'],
+    domainPositions: const [
+      Offset(0.5, 0.85), Offset(0.2, 0.5),
+      Offset(0.8, 0.5), Offset(0.5, 0.15),
+    ],
+    domainEdges: {(0, 1), (0, 2), (1, 3), (2, 3)},
+    codomainLabels: const ['1', '2', '3'],
+    codomainPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    codomainEdges: {(0, 1), (1, 2)},
+    hint: 'L and R are incomparable in the diamond, but they must each map somewhere between f(⊥) and f(⊤).',
+    notationReveal: 'Monotone maps can "flatten"\nincomparable elements onto\nthe same level.\n\nOrder-preserving ≠ order-reflecting!',
+  ),
+
+  // Identity map: trivially monotone (Ex 1.70)
+  MonotoneLevelConfig(
+    id: 'mon4-identity',
+    title: 'MIRROR',
+    subtitle: 'Map each element to itself. Always monotone!',
+    domainLabels: const ['a', 'b', 'c'],
+    domainPositions: const [Offset(0.5, 0.8), Offset(0.3, 0.4), Offset(0.7, 0.4)],
+    domainEdges: {(0, 1), (0, 2)},
+    codomainLabels: const ['a', 'b', 'c'],
+    codomainPositions: const [Offset(0.5, 0.8), Offset(0.3, 0.4), Offset(0.7, 0.4)],
+    codomainEdges: {(0, 1), (0, 2)},
+    expectedMap: {0: 0, 1: 1, 2: 2},
+    hint: 'The identity map sends every element to itself.',
+    notationReveal: 'id_P : P → P\n\nThe identity is always monotone.\nIt\'s the simplest example of\na structure-preserving map.',
+  ),
+
+  // Cardinality map: |·| : P({1,2}) → 3-chain (Ex 1.62–1.63)
+  MonotoneLevelConfig(
+    id: 'mon5-cardinality',
+    title: 'COUNT',
+    subtitle: 'Map each set to its size. Is it monotone?',
+    domainLabels: const ['∅', '{1}', '{2}', '{1,2}'],
+    domainPositions: const [
+      Offset(0.5, 0.85), Offset(0.2, 0.5),
+      Offset(0.8, 0.5), Offset(0.5, 0.15),
+    ],
+    domainEdges: {(0, 1), (0, 2), (1, 3), (2, 3)},
+    codomainLabels: const ['0', '1', '2'],
+    codomainPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    codomainEdges: {(0, 1), (1, 2)},
+    expectedMap: {0: 0, 1: 1, 2: 1, 3: 2}, // ∅↦0, {1}↦1, {2}↦1, {1,2}↦2
+    hint: '∅ has 0 elements, {1} has 1, {2} has 1, {1,2} has 2.',
+    notationReveal: '|·| : P({1,2}) → ℕ\n\nCardinality is monotone!\nA ⊆ B implies |A| ≤ |B|\n\nThis "flattens" the diamond\ninto a chain (Ex 1.63)',
+  ),
+];
+
 /// Unified level type for the level select screen.
-enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick }
+enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick, monotone }
 
 class Ch1Level {
   final String title;
@@ -720,6 +808,13 @@ final ch1AllLevels = [
     Ch1Level(
       title: meetJoinPickLevels[i].title,
       type: Ch1LevelType.meetJoinPick,
+      index: i,
+    ),
+  // Monotone map levels
+  for (var i = 0; i < monotoneLevels.length; i++)
+    Ch1Level(
+      title: monotoneLevels[i].title,
+      type: Ch1LevelType.monotone,
       index: i,
     ),
 ];
