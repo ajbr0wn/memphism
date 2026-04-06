@@ -3,6 +3,7 @@ import '../models/partition.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
+import '../screens/galois_screen.dart';
 import '../screens/monotone_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
@@ -749,8 +750,75 @@ final monotoneLevels = [
   ),
 ];
 
+// ── Galois connection levels (Section 1.4, Def 1.95) ──
+
+final galoisLevels = [
+  // Exercise 1.99 part 1: 3-chain to 3-chain, simple adjunction
+  // f: 1↦1, 2↦2, 3↦3 (identity), g must also be identity
+  GaloisLevelConfig(
+    id: 'gal1-identity',
+    title: 'ADJOINT',
+    subtitle: 'Given f, find g such that\nf(p) ≤ q  iff  p ≤ g(q).',
+    pLabels: const ['1', '2'],
+    pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    pEdges: {(0, 1)},
+    qLabels: const ['a', 'b'],
+    qPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    qEdges: {(0, 1)},
+    givenMap: {0: 0, 1: 1}, // f: 1↦a, 2↦b (identity-like)
+    fIsGiven: true,
+    expectedAnswer: {0: 0, 1: 1}, // g: a↦1, b↦2
+    hint: 'f is the identity (preserving labels). For f(p) ≤ q iff p ≤ g(q), try g = identity too.',
+    notationReveal: 'f = g = identity!\n\nWhen f is an isomorphism,\ng = f⁻¹ (the inverse).\nGalois connections generalize\nisomorphisms.',
+  ),
+
+  // f: 2-chain → 3-chain, f(1)=1, f(2)=3. Find g.
+  // g must satisfy: f(p) ≤ q iff p ≤ g(q)
+  // f(1)=1 ≤ q iff 1 ≤ g(q) → always true, g(q) ≥ 1 always → g(1)≥1, g(2)≥1, g(3)≥1
+  // f(2)=3 ≤ q iff 2 ≤ g(q) → 3≤1? no. 3≤2? no. 3≤3? yes → g(3)=2, g(1)=1, g(2)=1
+  GaloisLevelConfig(
+    id: 'gal2-floor',
+    title: 'ROUND',
+    subtitle: 'Given f (left adjoint), find g (right adjoint).',
+    pLabels: const ['1', '2'],
+    pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    pEdges: {(0, 1)},
+    qLabels: const ['1', '2', '3'],
+    qPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    qEdges: {(0, 1), (1, 2)},
+    givenMap: {0: 0, 1: 2}, // f: 1↦1, 2↦3
+    fIsGiven: true,
+    expectedAnswer: {0: 0, 1: 0, 2: 1}, // g: 1↦1, 2↦1, 3↦2
+    hint: 'For each q, g(q) is the LARGEST p such that f(p) ≤ q.\nf(1)=1, f(2)=3. So g(1)=1 (f(1)≤1), g(2)=1 (f(1)≤2 but f(2)=3>2), g(3)=2.',
+    notationReveal: 'f "embeds" {1,2} into {1,2,3}\ng "rounds down" to the nearest\nelement in the image of f\n\nLike ceiling ⌈−/3⌉ and\nfloor ⌊3×−⌋ from Ex 1.97!',
+  ),
+
+  // Bool → diamond: f(F)=⊥, f(T)=⊤. Find g.
+  // g(⊥)=F (f(F)=⊥≤⊥, f(T)=⊤≰⊥), g(L)=? f(F)=⊥≤L? yes. f(T)=⊤≤L? no → g(L)=F
+  // g(R)=F same reasoning. g(⊤)=T (f(T)=⊤≤⊤).
+  GaloisLevelConfig(
+    id: 'gal3-diamond',
+    title: 'CONNECT',
+    subtitle: 'Given f: Bool → Diamond, find g.',
+    pLabels: const ['F', 'T'],
+    pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    pEdges: {(0, 1)},
+    qLabels: const ['⊥', 'L', 'R', '⊤'],
+    qPositions: const [
+      Offset(0.5, 0.85), Offset(0.2, 0.5),
+      Offset(0.8, 0.5), Offset(0.5, 0.15),
+    ],
+    qEdges: {(0, 1), (0, 2), (1, 3), (2, 3)},
+    givenMap: {0: 0, 1: 3}, // f: F↦⊥, T↦⊤
+    fIsGiven: true,
+    expectedAnswer: {0: 0, 1: 0, 2: 0, 3: 1}, // g: ⊥↦F, L↦F, R↦F, ⊤↦T
+    hint: 'g(q) = largest p with f(p) ≤ q.\nf(F)=⊥, f(T)=⊤.\ng(⊥): f(F)=⊥≤⊥ ✓ → F. g(L): f(F)=⊥≤L ✓, f(T)=⊤≤L? ✗ → F.\ng(⊤): f(T)=⊤≤⊤ ✓ → T.',
+    notationReveal: 'g collapses the middle!\nL and R both map to F.\n\nThe right adjoint "rounds down"\nto the image of f.\n\nInformation is lost — Galois\nconnections aren\'t isomorphisms.',
+  ),
+];
+
 /// Unified level type for the level select screen.
-enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick, monotone }
+enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick, monotone, galois }
 
 class Ch1Level {
   final String title;
@@ -815,6 +883,13 @@ final ch1AllLevels = [
     Ch1Level(
       title: monotoneLevels[i].title,
       type: Ch1LevelType.monotone,
+      index: i,
+    ),
+  // Galois connection levels
+  for (var i = 0; i < galoisLevels.length; i++)
+    Ch1Level(
+      title: galoisLevels[i].title,
+      type: Ch1LevelType.galois,
       index: i,
     ),
 ];
