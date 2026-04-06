@@ -120,16 +120,16 @@ final orderingLevels = [
 
 final joinLevels = [
   JoinLevelConfig(
-    id: 'j1-bool',
+    id: 'j1-simple',
     title: 'JOIN',
-    subtitle: 'What is false ∨ true?',
-    partitionA: Partition(const [{'false'}]),
-    partitionB: Partition(const [{'true'}]),
-    expectedJoin: Partition(const [{'true'}]),
-    elementLabels: const ['true', 'false'],
-    positions: const [Offset(0.5, 0.35), Offset(0.5, 0.65)],
-    hint: 'The join is the smallest element ≥ both.',
-    notationReveal: 'false ∨ true = true',
+    subtitle: 'Find A ∨ B — the coarsest partition ≥ both.',
+    partitionA: Partition(const [{'1'}, {'2', '3'}]),
+    partitionB: Partition(const [{'1', '2'}, {'3'}]),
+    expectedJoin: Partition(const [{'1', '2', '3'}]),
+    elementLabels: const ['1', '2', '3'],
+    positions: const [Offset(0.5, 0.3), Offset(0.3, 0.6), Offset(0.7, 0.6)],
+    hint: 'In A: 2 is with 3. In B: 1 is with 2. So in the join, 1-2-3 are all connected...',
+    notationReveal: '{1}{2,3} ∨ {1,2}{3} = {1,2,3}\n\nThe join merges overlapping groups',
   ),
   JoinLevelConfig(
     id: 'j2-partitions',
