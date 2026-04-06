@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/partition.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
+import '../screens/meet_join_pick_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
 import '../screens/preorder_screen.dart';
@@ -261,8 +262,97 @@ final preorderLevels = [
   ),
 ];
 
+// ── Meet/Join picking levels (Section 1.3) ──
+
+final meetJoinPickLevels = [
+  // GCD in divisibility (Exercise 1.90)
+  // Divisibility on {1,2,3,4,5,6}: Hasse: 1→2,1→3,1→5,2→4,2→6,3→6
+  MeetJoinPickConfig(
+    id: 'mj1-gcd',
+    title: 'GCD',
+    subtitle: null,
+    elementLabels: const ['1', '2', '3', '4', '5', '6'],
+    positions: const [
+      Offset(0.5, 0.85),  // 1
+      Offset(0.25, 0.6),  // 2
+      Offset(0.5, 0.6),   // 3
+      Offset(0.15, 0.35), // 4
+      Offset(0.75, 0.6),  // 5
+      Offset(0.4, 0.35),  // 6
+    ],
+    edges: {(0,1),(0,2),(0,4),(1,3),(1,5),(2,5)},
+    highlighted: (3, 5), // 4 and 6
+    operation: MeetOrJoin.meet,
+    answer: 1, // GCD(4,6) = 2
+    hint: 'Meet = greatest lower bound. What\'s the largest number that divides both 4 and 6?',
+    notationReveal: '4 ∧ 6 = 2\n\nMeet in divisibility = GCD\n(greatest common divisor)',
+  ),
+
+  // LCM in divisibility (Exercise 1.90)
+  MeetJoinPickConfig(
+    id: 'mj2-lcm',
+    title: 'LCM',
+    subtitle: null,
+    elementLabels: const ['1', '2', '3', '4', '5', '6'],
+    positions: const [
+      Offset(0.5, 0.85),
+      Offset(0.25, 0.6),
+      Offset(0.5, 0.6),
+      Offset(0.15, 0.35),
+      Offset(0.75, 0.6),
+      Offset(0.4, 0.35),
+    ],
+    edges: {(0,1),(0,2),(0,4),(1,3),(1,5),(2,5)},
+    highlighted: (1, 2), // 2 and 3
+    operation: MeetOrJoin.join,
+    answer: 5, // LCM(2,3) = 6
+    hint: 'Join = least upper bound. What\'s the smallest number that both 2 and 3 divide into?',
+    notationReveal: '2 ∨ 3 = 6\n\nJoin in divisibility = LCM\n(least common multiple)',
+  ),
+
+  // Meet in power set = intersection (Example 1.87)
+  MeetJoinPickConfig(
+    id: 'mj3-intersect',
+    title: 'MEET',
+    subtitle: null,
+    elementLabels: const ['∅', '{1}', '{2}', '{1,2}'],
+    positions: const [
+      Offset(0.5, 0.8),
+      Offset(0.3, 0.5),
+      Offset(0.7, 0.5),
+      Offset(0.5, 0.2),
+    ],
+    edges: {(0,1),(0,2),(1,3),(2,3)},
+    highlighted: (1, 2), // {1} and {2}
+    operation: MeetOrJoin.meet,
+    answer: 0, // {1} ∩ {2} = ∅
+    hint: 'Meet in the power set = intersection. What do {1} and {2} have in common?',
+    notationReveal: '{1} ∧ {2} = ∅\n\nMeet in P(X) = intersection\n(A ∧ B = A ∩ B)',
+  ),
+
+  // Join in power set = union (Example 1.87)
+  MeetJoinPickConfig(
+    id: 'mj4-union',
+    title: 'JOIN²',
+    subtitle: null,
+    elementLabels: const ['∅', '{1}', '{2}', '{1,2}'],
+    positions: const [
+      Offset(0.5, 0.8),
+      Offset(0.3, 0.5),
+      Offset(0.7, 0.5),
+      Offset(0.5, 0.2),
+    ],
+    edges: {(0,1),(0,2),(1,3),(2,3)},
+    highlighted: (1, 2), // {1} and {2}
+    operation: MeetOrJoin.join,
+    answer: 3, // {1} ∪ {2} = {1,2}
+    hint: 'Join in the power set = union. What\'s the smallest set containing both {1} and {2}?',
+    notationReveal: '{1} ∨ {2} = {1,2}\n\nJoin in P(X) = union\n(A ∨ B = A ∪ B)',
+  ),
+];
+
 /// Unified level type for the level select screen.
-enum Ch1LevelType { partition, ordering, join, function_, preorder }
+enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick }
 
 class Ch1Level {
   final String title;
@@ -313,6 +403,13 @@ final ch1AllLevels = [
     Ch1Level(
       title: preorderLevels[i].title,
       type: Ch1LevelType.preorder,
+      index: i,
+    ),
+  // Meet/Join picking levels
+  for (var i = 0; i < meetJoinPickLevels.length; i++)
+    Ch1Level(
+      title: meetJoinPickLevels[i].title,
+      type: Ch1LevelType.meetJoinPick,
       index: i,
     ),
 ];
