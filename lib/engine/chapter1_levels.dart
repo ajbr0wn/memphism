@@ -120,16 +120,16 @@ final orderingLevels = [
 
 final joinLevels = [
   JoinLevelConfig(
-    id: 'j1-simple',
+    id: 'j1-easy',
     title: 'JOIN',
-    subtitle: 'Find A ∨ B — the coarsest partition ≥ both.',
-    partitionA: Partition(const [{'1'}, {'2', '3'}]),
+    subtitle: 'Find A ∨ B — the smallest partition ≥ both.',
+    partitionA: Partition(const [{'1'}, {'2'}, {'3'}]),
     partitionB: Partition(const [{'1', '2'}, {'3'}]),
-    expectedJoin: Partition(const [{'1', '2', '3'}]),
+    expectedJoin: Partition(const [{'1', '2'}, {'3'}]),
     elementLabels: const ['1', '2', '3'],
     positions: const [Offset(0.5, 0.3), Offset(0.3, 0.6), Offset(0.7, 0.6)],
-    hint: 'In A: 2 is with 3. In B: 1 is with 2. So in the join, 1-2-3 are all connected...',
-    notationReveal: '{1}{2,3} ∨ {1,2}{3} = {1,2,3}\n\nThe join merges overlapping groups',
+    hint: 'The join must be ≥ both A and B. The finest partition is ≤ everything, so joining it with B just gives B.',
+    notationReveal: '{1}{2}{3} ∨ {1,2}{3} = {1,2}{3}\n\n⊥ ∨ x = x always',
   ),
   JoinLevelConfig(
     id: 'j2-partitions',
@@ -265,6 +265,40 @@ final preorderLevels = [
 // ── Meet/Join picking levels (Section 1.3) ──
 
 final meetJoinPickLevels = [
+  // Boolean lattice: false ≤ true
+  MeetJoinPickConfig(
+    id: 'mj0-bool-join',
+    title: 'OR',
+    subtitle: null,
+    elementLabels: const ['false', 'true'],
+    positions: const [
+      Offset(0.5, 0.7),  // false at bottom
+      Offset(0.5, 0.3),  // true at top
+    ],
+    edges: {(0, 1)}, // false → true
+    highlighted: (0, 1), // false and true
+    operation: MeetOrJoin.join,
+    answer: 1, // false ∨ true = true
+    hint: 'Join = least upper bound. What\'s the smallest element ≥ both false and true?',
+    notationReveal: 'false ∨ true = true\n\nJoin in Bool = OR\n(∨ is "or")',
+  ),
+  MeetJoinPickConfig(
+    id: 'mj0-bool-meet',
+    title: 'AND',
+    subtitle: null,
+    elementLabels: const ['false', 'true'],
+    positions: const [
+      Offset(0.5, 0.7),  // false at bottom
+      Offset(0.5, 0.3),  // true at top
+    ],
+    edges: {(0, 1)}, // false → true
+    highlighted: (0, 1), // false and true
+    operation: MeetOrJoin.meet,
+    answer: 0, // false ∧ true = false
+    hint: 'Meet = greatest lower bound. What\'s the largest element ≤ both false and true?',
+    notationReveal: 'false ∧ true = false\n\nMeet in Bool = AND\n(∧ is "and")',
+  ),
+
   // GCD in divisibility (Exercise 1.90)
   // Divisibility on {1,2,3,4,5,6}: Hasse: 1→2,1→3,1→5,2→4,2→6,3→6
   MeetJoinPickConfig(
