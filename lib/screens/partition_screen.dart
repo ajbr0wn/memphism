@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/partition.dart';
 import '../theme/haptics.dart';
 import '../theme/palette.dart';
+import '../widgets/hasse_view.dart';
 import '../widgets/partition_canvas.dart';
 import '../widgets/partition_shelf.dart';
 
@@ -67,6 +68,7 @@ class _PartitionScreenState extends State<PartitionScreen>
   bool _showNotation = false;
   int _maxGroups = 1;
   int _nextGroupIndex = 1;
+  bool _showHasse = false;
 
   late AnimationController _pulseController;
 
@@ -212,15 +214,20 @@ class _PartitionScreenState extends State<PartitionScreen>
                 ),
               ),
             Expanded(
-              child: AnimatedBuilder(
-                animation: _pulseController,
-                builder: (context, _) => PartitionCanvas(
-                  elements: _elements,
-                  onTapElement: _onTapElement,
-                  onLassoGroup: _onLassoGroup,
-                  pulsePhase: _pulseController.value,
-                ),
-              ),
+              child: _showHasse
+                  ? HasseView(
+                      partitions: _collectedPartitions,
+                      elementIds: widget.config.elementLabels,
+                    )
+                  : AnimatedBuilder(
+                      animation: _pulseController,
+                      builder: (context, _) => PartitionCanvas(
+                        elements: _elements,
+                        onTapElement: _onTapElement,
+                        onLassoGroup: _onLassoGroup,
+                        pulsePhase: _pulseController.value,
+                      ),
+                    ),
             ),
             if (!_levelComplete) _buildControls(),
             if (_showNotation) _buildNotation(),
@@ -252,6 +259,31 @@ class _PartitionScreenState extends State<PartitionScreen>
             ),
           ),
           const Spacer(),
+          if (widget.config.type == PartitionLevelType.findAll &&
+              _collectedPartitions.length >= 2)
+            GestureDetector(
+              onTap: () => setState(() => _showHasse = !_showHasse),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: _showHasse
+                      ? Palette.violet.withValues(alpha: 0.15)
+                      : Palette.bgCard,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: _showHasse
+                        ? Palette.violet.withValues(alpha: 0.5)
+                        : Palette.textDim.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Icon(
+                  Icons.account_tree_outlined,
+                  size: 18,
+                  color: _showHasse ? Palette.violet : Palette.textDim,
+                ),
+              ),
+            ),
           if (widget.config.hint != null && !_levelComplete)
             GestureDetector(
               onTap: () => _showSnack(widget.config.hint!),
