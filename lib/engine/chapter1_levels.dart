@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/partition.dart';
+import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
@@ -157,8 +158,53 @@ final joinLevels = [
   ),
 ];
 
+// ── Function levels (Ex 1.24) ──
+
+final functionLevels = [
+  FunctionLevelConfig(
+    id: 'f1-any',
+    title: 'MAP',
+    subtitle: 'Draw arrows from A to B. Every element needs one.',
+    domainLabels: const ['1', '2', '3'],
+    codomainLabels: const ['a', 'b'],
+    goal: FunctionGoal.anyFunction,
+    hint: 'Drag from each left element to a right element. Every left element needs exactly one arrow.',
+    notationReveal: 'f : A → B\n\nA function maps every input\nto exactly one output',
+  ),
+  FunctionLevelConfig(
+    id: 'f2-injective',
+    title: 'INJECT',
+    subtitle: 'Map so no two inputs share an output.',
+    domainLabels: const ['1', '2'],
+    codomainLabels: const ['a', 'b', 'c'],
+    goal: FunctionGoal.injective,
+    hint: 'Each output can be used at most once.',
+    notationReveal: 'f : A ↣ B\n\nInjective: different inputs →\ndifferent outputs',
+  ),
+  FunctionLevelConfig(
+    id: 'f3-surjective',
+    title: 'COVER',
+    subtitle: 'Map so every output is hit.',
+    domainLabels: const ['1', '2', '3'],
+    codomainLabels: const ['a', 'b'],
+    goal: FunctionGoal.surjective,
+    hint: 'Every element on the right must have at least one arrow pointing to it.',
+    notationReveal: 'f : A ↠ B\n\nSurjective: every output\nis reached',
+  ),
+  FunctionLevelConfig(
+    id: 'f4-bijective',
+    title: 'MATCH',
+    subtitle: 'Map so it\'s both injective AND surjective.',
+    domainLabels: const ['1', '2', '3'],
+    codomainLabels: const ['a', 'b', 'c'],
+    goal: FunctionGoal.bijective,
+    hint: 'A perfect pairing — every input to a unique output, every output used.',
+    notationReveal: 'f : A ≅ B\n\nBijective: a perfect\ncorrespondence',
+  ),
+];
+
 /// Unified level type for the level select screen.
-enum Ch1LevelType { partition, ordering, join }
+enum Ch1LevelType { partition, ordering, join, function_ }
 
 class Ch1Level {
   final String title;
@@ -195,6 +241,13 @@ final ch1AllLevels = [
     Ch1Level(
       title: joinLevels[i].title,
       type: Ch1LevelType.join,
+      index: i,
+    ),
+  // Function levels
+  for (var i = 0; i < functionLevels.length; i++)
+    Ch1Level(
+      title: functionLevels[i].title,
+      type: Ch1LevelType.function_,
       index: i,
     ),
 ];

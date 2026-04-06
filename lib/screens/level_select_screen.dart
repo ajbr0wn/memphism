@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../engine/chapter1_levels.dart';
+import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
@@ -52,6 +53,11 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
       case Ch1LevelType.join:
         screen = JoinScreen(
           config: joinLevels[level.index],
+          onComplete: () => _onComplete(index),
+        );
+      case Ch1LevelType.function_:
+        screen = FunctionScreen(
+          config: functionLevels[level.index],
           onComplete: () => _onComplete(index),
         );
     }
@@ -169,6 +175,7 @@ class _LevelCard extends StatelessWidget {
       Ch1LevelType.partition => Icons.grid_view_rounded,
       Ch1LevelType.ordering => Icons.swap_vert,
       Ch1LevelType.join => Icons.merge_type,
+      Ch1LevelType.function_ => Icons.arrow_forward,
     };
 
     return GestureDetector(
