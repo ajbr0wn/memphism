@@ -242,38 +242,42 @@ class _PartitionScreenState extends State<PartitionScreen>
                 ),
               ),
             Expanded(
-              flex: 3,
-              child: AnimatedBuilder(
-                animation: _pulseController,
-                builder: (context, _) => PartitionCanvas(
-                  elements: _elements,
-                  onTapElement: _onTapElement,
-                  onLassoGroup: _onLassoGroup,
-                  pulsePhase: _pulseController.value,
-                ),
+              child: Stack(
+                children: [
+                  // Hasse diagram as transparent underlay
+                  if (widget.config.type == PartitionLevelType.findAll &&
+                      _collectedPartitions.length >= 2)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Opacity(
+                          opacity: 0.35,
+                          child: HasseView(
+                            partitions: _collectedPartitions,
+                            elementIds: widget.config.elementLabels,
+                          ),
+                        ),
+                      ),
+                    ),
+                  // Main play area on top
+                  AnimatedBuilder(
+                    animation: _pulseController,
+                    builder: (context, _) => PartitionCanvas(
+                      elements: _elements,
+                      onTapElement: _onTapElement,
+                      onLassoGroup: _onLassoGroup,
+                      pulsePhase: _pulseController.value,
+                    ),
+                  ),
+                ],
               ),
             ),
             if (!_levelComplete) _buildControls(),
             if (_showNotation) _buildNotation(),
-            if (widget.config.type == PartitionLevelType.findAll &&
-                _collectedPartitions.isNotEmpty)
-              Expanded(
-                flex: 2,
-                child: Column(
-                  children: [
-                    PartitionShelf(
-                      collected: _collectedPartitions,
-                      totalExpected: _allPossible.length,
-                      elementIds: widget.config.elementLabels,
-                    ),
-                    Expanded(
-                      child: HasseView(
-                        partitions: _collectedPartitions,
-                        elementIds: widget.config.elementLabels,
-                      ),
-                    ),
-                  ],
-                ),
+            if (widget.config.type == PartitionLevelType.findAll)
+              PartitionShelf(
+                collected: _collectedPartitions,
+                totalExpected: _allPossible.length,
+                elementIds: widget.config.elementLabels,
               ),
             if (_levelComplete) _buildContinue(),
           ],

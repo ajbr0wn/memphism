@@ -67,8 +67,8 @@ class HasseView extends StatelessWidget {
         for (var li = 0; li < sortedKeys.length; li++) {
           final key = sortedKeys[li];
           final layer = layers[key]!;
-          // Reverse: more parts (finer) at bottom, fewer parts (coarser) at top
-          final y = size.height - (li + 1) * verticalSpacing;
+          // Fewer parts (coarser) at top, more parts (finer) at bottom
+          final y = (li + 1) * verticalSpacing;
           final horizontalSpacing = size.width / (layer.length + 1);
           for (var pi = 0; pi < layer.length; pi++) {
             final globalIdx = partitions.indexOf(layer[pi]);
