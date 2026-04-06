@@ -4,6 +4,7 @@ import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
+import '../screens/preorder_screen.dart';
 
 /// All Chapter 1 levels in order.
 /// Covers: partitions, ordering, Hasse diagrams, joins.
@@ -203,8 +204,65 @@ final functionLevels = [
   ),
 ];
 
+// ── Preorder/Hasse building levels ──
+
+final preorderLevels = [
+  // Exercise 1.46: divisibility on {1,...,6}
+  // Using 1-6 to keep it manageable. a → b if a divides b.
+  // Hasse diagram (cover relations only):
+  // 1→2, 1→3, 1→5, 2→4, 2→6, 3→6
+  PreorderLevelConfig(
+    id: 'pre1-divide6',
+    title: 'DIVIDE',
+    subtitle: 'Draw a→b when a divides b evenly. Covers only.',
+    elementLabels: const ['1', '2', '3', '4', '5', '6'],
+    positions: const [
+      Offset(0.5, 0.85),  // 1 at bottom
+      Offset(0.25, 0.6),  // 2
+      Offset(0.5, 0.6),   // 3
+      Offset(0.15, 0.35), // 4
+      Offset(0.75, 0.6),  // 5
+      Offset(0.4, 0.35),  // 6
+    ],
+    expectedEdges: {
+      (0, 1), // 1→2
+      (0, 2), // 1→3
+      (0, 4), // 1→5
+      (1, 3), // 2→4
+      (1, 5), // 2→6
+      (2, 5), // 3→6
+    },
+    hint: 'a divides b means b/a is a whole number. Only draw direct covers — if 1→2→4, don\'t draw 1→4.',
+    notationReveal: 'Divisibility is a partial order!\n\nNot total: 2 and 3 are\nincomparable (neither divides\nthe other)',
+  ),
+
+  // Exercise 1.51: Power set P({1,2})
+  // Subsets: ∅, {1}, {2}, {1,2}
+  // Hasse: ∅→{1}, ∅→{2}, {1}→{1,2}, {2}→{1,2}
+  PreorderLevelConfig(
+    id: 'pre2-powerset',
+    title: 'POWER',
+    subtitle: 'Draw a→b when a ⊆ b. Build the power set lattice.',
+    elementLabels: const ['∅', '{1}', '{2}', '{1,2}'],
+    positions: const [
+      Offset(0.5, 0.8),   // ∅ at bottom
+      Offset(0.3, 0.5),   // {1}
+      Offset(0.7, 0.5),   // {2}
+      Offset(0.5, 0.2),   // {1,2} at top
+    ],
+    expectedEdges: {
+      (0, 1), // ∅ → {1}
+      (0, 2), // ∅ → {2}
+      (1, 3), // {1} → {1,2}
+      (2, 3), // {2} → {1,2}
+    },
+    hint: 'A ⊆ B means every element of A is also in B. ∅ is a subset of everything.',
+    notationReveal: 'P({1,2}) — the power set lattice\n\nIt\'s a diamond! (a.k.a. Boolean\nalgebra B₂)',
+  ),
+];
+
 /// Unified level type for the level select screen.
-enum Ch1LevelType { partition, ordering, join, function_ }
+enum Ch1LevelType { partition, ordering, join, function_, preorder }
 
 class Ch1Level {
   final String title;
@@ -248,6 +306,13 @@ final ch1AllLevels = [
     Ch1Level(
       title: functionLevels[i].title,
       type: Ch1LevelType.function_,
+      index: i,
+    ),
+  // Preorder levels
+  for (var i = 0; i < preorderLevels.length; i++)
+    Ch1Level(
+      title: preorderLevels[i].title,
+      type: Ch1LevelType.preorder,
       index: i,
     ),
 ];

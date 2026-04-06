@@ -5,6 +5,7 @@ import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
+import '../screens/preorder_screen.dart';
 import '../theme/palette.dart';
 
 class LevelSelectScreen extends StatefulWidget {
@@ -58,6 +59,11 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
       case Ch1LevelType.function_:
         screen = FunctionScreen(
           config: functionLevels[level.index],
+          onComplete: () => _onComplete(index),
+        );
+      case Ch1LevelType.preorder:
+        screen = PreorderScreen(
+          config: preorderLevels[level.index],
           onComplete: () => _onComplete(index),
         );
     }
@@ -176,6 +182,7 @@ class _LevelCard extends StatelessWidget {
       Ch1LevelType.ordering => Icons.swap_vert,
       Ch1LevelType.join => Icons.merge_type,
       Ch1LevelType.function_ => Icons.arrow_forward,
+      Ch1LevelType.preorder => Icons.account_tree,
     };
 
     return GestureDetector(
