@@ -279,6 +279,50 @@ final List<TapAnswerConfig> ch3TapLevels = [
     hint: 'Preorders are categories. Galois connections are adjunctions between preorder-categories. Same concept, general setting!',
     notationReveal: 'Adjunctions between preorders\n= Galois connections!\n\nYou already know adjunctions.\nChapter 1\'s Galois levels\nwere adjunctions all along.\n\nFull circle! 🔄',
   ),
+  // Inverse function (Ex 3.30)
+  TapAnswerConfig(
+    id: 'c3t19-find-inverse',
+    title: 'UNDO',
+    question: 'f: {a,b,c} → {1,2,3}\nf(a)=2, f(b)=1, f(c)=3.\n\nWhat is f⁻¹(2)?',
+    elementLabels: const ['a', 'b', 'c'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 0, // f⁻¹(2) = a
+    highlighted: {},
+    hint: 'f(a) = 2, so the inverse sends 2 back to a.',
+    notationReveal: 'f⁻¹(2) = a\n\nThe inverse "undoes" f:\nf⁻¹(f(x)) = x for all x.\n\nOnly bijections have inverses!\n\n(Ex 3.30)',
+  ),
+
+  // How many isomorphisms? (Ex 3.30 part 2)
+  TapAnswerConfig(
+    id: 'c3t20-count-iso',
+    title: 'SHUFFLE',
+    question: 'How many bijections (isomorphisms)\nare there from {a,b,c} to {1,2,3}?',
+    elementLabels: const ['3', '6', '9'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 3! = 6
+    highlighted: {},
+    hint: 'a can go to 3 places. Then b has 2 choices. Then c has 1. That\'s 3 × 2 × 1 = 6.',
+    notationReveal: '3! = 6 bijections.\n\nFor sets of size n:\nn! = n × (n-1) × ... × 1\n\nThese are all the "shuffles"\n(permutations).\n\n(Ex 3.30)',
+  ),
+
+  // Retraction: almost-inverse (Example 3.34)
+  TapAnswerConfig(
+    id: 'c3t21-retraction',
+    title: 'ALMOST',
+    question: 'f: {1,2} → {1,2,3}: f(1)=1, f(2)=3.\ng: {1,2,3} → {1,2}: g(1)=1, g(2)=1, g(3)=2.\n\nIs f;g = id?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // yes! f;g(1)=g(f(1))=g(1)=1, f;g(2)=g(f(2))=g(3)=2
+    highlighted: {},
+    hint: 'f;g(1) = g(f(1)) = g(1) = 1 ✓\nf;g(2) = g(f(2)) = g(3) = 2 ✓\nSo f;g = id on {1,2}!',
+    notationReveal: 'f;g = id_{1,2} ✓\nBut g;f ≠ id_{1,2,3}!\n\ng;f(2) = f(g(2)) = f(1) = 1 ≠ 2.\n\nf and g are NOT isomorphisms\n— but f is a "retraction."\nAlmost-inverse! (Ex 3.34)',
+  ),
 ];
 
 // ── Composition table levels (Section 3.2.1) ──
