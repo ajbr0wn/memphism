@@ -219,6 +219,66 @@ final List<TapAnswerConfig> ch3TapLevels = [
     hint: 'F must preserve the arrow. If v₁→v₂ in 2, then F(v₁)→F(v₂) in 3.\nSo F(v₁) ≤ F(v₂) in the chain 1≤2≤3.\nPairs (a,b) with a≤b: (1,1),(1,2),(1,3),(2,2),(2,3),(3,3) = 6.',
     notationReveal: '6 functors from 2 to 3!\n\nThey correspond to pairs (a,b)\nwith a ≤ b in the 3-chain.\n\nThis is C(3,2) + 3 = 3+3 = 6\n(choosing 2 from 3 with order)\n\n(Ex 3.37)',
   ),
+
+  // Database = functor to Set (Def 3.44)
+  TapAnswerConfig(
+    id: 'c3t15-database',
+    title: 'DATABASE',
+    question: 'A database schema is a category C.\nA database instance is a functor\nI : C → Set.\n\nWhat does I assign to each object?',
+    elementLabels: const ['a number', 'a set (table)', 'another category'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // a set (the rows of a table)
+    highlighted: {},
+    hint: 'Each object in the schema becomes a table. A table is a set of rows.',
+    notationReveal: 'I(object) = a set = a table!\n\nI(morphism) = a function\nbetween tables (foreign key).\n\nDatabase = functor to Set.\nSchema = category.\nInstance = functor.\n\n(Def 3.44)',
+  ),
+
+  // Commutative square: path equations (Ex 3.16-3.17)
+  TapAnswerConfig(
+    id: 'c3t16-commute',
+    title: 'COMMUTE',
+    question: 'In a commutative square:\nA→B→D and A→C→D\nare the same path: f;h = g;i.\n\nThe free square has 10 morphisms.\nThe commutative square has...?',
+    elementLabels: const ['8', '9', '10'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 9 morphisms
+    highlighted: {},
+    hint: 'The free square has 10 paths. The equation f;h = g;i identifies two of them (they become one morphism). 10 - 1 = 9.',
+    notationReveal: '9 morphisms!\n\nThe equation f;h = g;i\nmerges two paths into one.\n10 - 1 = 9.\n\n"Commuting" means different\npaths give the same result.\n\n(Ex 3.16-3.17)',
+  ),
+
+  // Groups = monoids where every morphism has an inverse (Ex 3.32)
+  TapAnswerConfig(
+    id: 'c3t17-group',
+    title: 'GROUP',
+    question: 'A monoid is a category with\none object. A group is a monoid\nwhere every morphism is invertible.\n\nThe loop s;s=z has morphisms {z,s}.\nIs this a group?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // yes! s is its own inverse since s;s=z=id
+    highlighted: {},
+    hint: 's;s = z = identity. So s is its own inverse! Every morphism (z and s) has an inverse.',
+    notationReveal: 'Yes! s⁻¹ = s (since s;s = z).\n\nThis is ℤ/2ℤ — the group\nwith two elements.\n\nGroups are categories with\none object where every\nmorphism is invertible.\n\n(Ex 3.32)',
+  ),
+
+  // Adjunctions generalize Galois connections (Section 3.4)
+  TapAnswerConfig(
+    id: 'c3t18-adjunction',
+    title: 'GENERALIZE',
+    question: 'In Chapter 1, we learned\nGalois connections: f(p)≤q iff p≤g(q).\n\nIn Chapter 3, adjunctions are the\nsame idea but for categories.\n\nAdjunctions between preorders are...?',
+    elementLabels: const ['functors', 'Galois connections', 'isomorphisms'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // Galois connections!
+    highlighted: {},
+    hint: 'Preorders are categories. Galois connections are adjunctions between preorder-categories. Same concept, general setting!',
+    notationReveal: 'Adjunctions between preorders\n= Galois connections!\n\nYou already know adjunctions.\nChapter 1\'s Galois levels\nwere adjunctions all along.\n\nFull circle! 🔄',
+  ),
 ];
 
 // ── Composition table levels (Section 3.2.1) ──
