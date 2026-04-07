@@ -91,10 +91,17 @@ class _GaloisScreenState extends State<GaloisScreen> {
   List<Offset> get _fromPixels => widget.config.fIsGiven ? _qPixels : _pPixels;
   List<Offset> get _toPixels => widget.config.fIsGiven ? _pPixels : _qPixels;
 
-  void _onDragStart(int index) {
+  /// Hit-test pan start against draggable nodes.
+  void _onPanStart(Offset position) {
     if (_levelComplete) return;
-    setState(() => _dragFrom = index);
-    Haptics.tap();
+    final fromPixels = _fromPixels;
+    for (var i = 0; i < fromPixels.length; i++) {
+      if ((fromPixels[i] - position).distance < 36) {
+        setState(() => _dragFrom = i);
+        Haptics.tap();
+        return;
+      }
+    }
   }
 
   void _onDragUpdate(Offset position) {
@@ -271,6 +278,7 @@ class _GaloisScreenState extends State<GaloisScreen> {
         }
 
         return GestureDetector(
+          onPanStart: (d) => _onPanStart(d.localPosition),
           onPanUpdate: (d) => _onDragUpdate(d.localPosition),
           onPanEnd: (_) => _onDragEnd(),
           child: CustomPaint(
@@ -305,14 +313,14 @@ class _GaloisScreenState extends State<GaloisScreen> {
                           fontSize: 16,
                           fontWeight: FontWeight.w800)),
                 ),
-                // P nodes
+                // P nodes (no individual gesture detectors)
                 for (var i = 0; i < _pPixels.length; i++)
                   _buildNodeAt(_pPixels[i], widget.config.pLabels[i],
-                      Palette.pink, i, !widget.config.fIsGiven),
+                      Palette.pink, i),
                 // Q nodes
                 for (var i = 0; i < _qPixels.length; i++)
                   _buildNodeAt(_qPixels[i], widget.config.qLabels[i],
-                      Palette.cyan, i, widget.config.fIsGiven),
+                      Palette.cyan, i),
               ],
             ),
           ),
@@ -322,48 +330,43 @@ class _GaloisScreenState extends State<GaloisScreen> {
   }
 
   Widget _buildNodeAt(
-      Offset pos, String label, Color color, int index, bool draggable) {
-    final widget2 = Container(
-      width: 48,
-      height: 48,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Palette.bgCard,
-        border: Border.all(
-          color: _dragFrom == index && draggable ? Palette.yellow : color,
-          width: 2,
-        ),
-        boxShadow: [
-          BoxShadow(color: color.withValues(alpha: 0.2), blurRadius: 10),
-        ],
-      ),
-      child: Center(
-        child: Text(label,
-            style: TextStyle(
-                color: color,
-                fontSize: label.length > 3 ? 9 : 13,
-                fontWeight: FontWeight.w700)),
-      ),
-    );
-
-    if (draggable && !_levelComplete) {
-      return Positioned(
-        left: pos.dx - 24,
-        top: pos.dy - 24,
-        child: GestureDetector(
-          onPanStart: (_) => _onDragStart(index),
-          onPanUpdate: (d) =>
-              _onDragUpdate(d.localPosition + pos - const Offset(24, 24)),
-          onPanEnd: (_) => _onDragEnd(),
-          child: widget2,
-        ),
-      );
-    }
+      Offset pos, String label, Color color, int index) {
+    // Check if this node is being dragged (it's a "from" node and matches _dragFrom)
+    final isDragging = _dragFrom == index && _fromPixels == (
+        widget.config.fIsGiven ? _qPixels : _pPixels) &&
+        (widget.config.fIsGiven ? color == Palette.cyan : color == Palette.pink);
 
     return Positioned(
       left: pos.dx - 24,
       top: pos.dy - 24,
-      child: widget2,
+      child: IgnorePointer(
+        child: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Palette.bgCard,
+            border: Border.all(
+              color: isDragging ? Palette.yellow : color,
+              width: isDragging ? 3 : 2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: (isDragging ? Palette.yellow : color)
+                    .withValues(alpha: isDragging ? 0.4 : 0.2),
+                blurRadius: isDragging ? 16 : 10,
+              ),
+            ],
+          ),
+          child: Center(
+            child: Text(label,
+                style: TextStyle(
+                    color: color,
+                    fontSize: label.length > 3 ? 9 : 13,
+                    fontWeight: FontWeight.w700)),
+          ),
+        ),
+      ),
     );
   }
 

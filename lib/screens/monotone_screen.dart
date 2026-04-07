@@ -131,12 +131,16 @@ class _MonotoneScreenState extends State<MonotoneScreen> {
     return true;
   }
 
-  void _onDragStart(int domainIndex) {
+  /// Hit-test pan start against domain nodes.
+  void _onPanStart(Offset position) {
     if (_levelComplete) return;
-    setState(() {
-      _dragFrom = domainIndex;
-    });
-    Haptics.tap();
+    for (var i = 0; i < _domainPixels.length; i++) {
+      if ((_domainPixels[i] - position).distance < 36) {
+        setState(() => _dragFrom = i);
+        Haptics.tap();
+        return;
+      }
+    }
   }
 
   void _onDragUpdate(Offset position) {
@@ -306,6 +310,7 @@ class _MonotoneScreenState extends State<MonotoneScreen> {
         }
 
         return GestureDetector(
+          onPanStart: (d) => _onPanStart(d.localPosition),
           onPanUpdate: (d) => _onDragUpdate(d.localPosition),
           onPanEnd: (_) => _onDragEnd(),
           child: CustomPaint(
@@ -340,16 +345,12 @@ class _MonotoneScreenState extends State<MonotoneScreen> {
                           fontSize: 16,
                           fontWeight: FontWeight.w800)),
                 ),
-                // Domain nodes
+                // Domain nodes (draggable via outer GestureDetector)
                 for (var i = 0; i < _domainPixels.length; i++)
                   Positioned(
                     left: _domainPixels[i].dx - 24,
                     top: _domainPixels[i].dy - 24,
-                    child: GestureDetector(
-                      onPanStart: (_) => _onDragStart(i),
-                      onPanUpdate: (d) =>
-                          _onDragUpdate(d.localPosition + _domainPixels[i] - const Offset(24, 24)),
-                      onPanEnd: (_) => _onDragEnd(),
+                    child: IgnorePointer(
                       child: _buildNode(
                         label: widget.config.domainLabels[i],
                         color: Palette.pink,
@@ -363,10 +364,12 @@ class _MonotoneScreenState extends State<MonotoneScreen> {
                   Positioned(
                     left: _codomainPixels[i].dx - 24,
                     top: _codomainPixels[i].dy - 24,
-                    child: _buildNode(
-                      label: widget.config.codomainLabels[i],
-                      color: Palette.cyan,
-                      isMapped: _mapping.values.contains(i),
+                    child: IgnorePointer(
+                      child: _buildNode(
+                        label: widget.config.codomainLabels[i],
+                        color: Palette.cyan,
+                        isMapped: _mapping.values.contains(i),
+                      ),
                     ),
                   ),
               ],
