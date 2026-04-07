@@ -116,7 +116,6 @@ final monoidalTableLevels = [
     hint: 'Intersection keeps only shared elements.\n{1}∩{2} = ∅ (nothing in common).\nThe unit must satisfy I∩x = x. Which set works?',
     notationReveal: '(P({1,2}), ⊆, {1,2}, ∩)\n\nThe whole set X is the unit!\nX ∩ A = A for all A\n\nMeet = intersection (Ch 1)\nNow it\'s also the monoidal\nproduct! (Ex 2.35)',
   ),
-];
 
   // Bool-category matrix from a Hasse diagram (Ex 2.47, Thm 2.49)
   // Preorder: p ≤ q ≤ r (3-chain). X(x,y) = true if x≤y, false otherwise.
