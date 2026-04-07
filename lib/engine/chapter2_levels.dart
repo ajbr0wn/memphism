@@ -213,6 +213,43 @@ final monoidalTableLevels = [
     hint: 'a ⊸ y is the largest x such that a ∧ x ≤ y.\nT ⊸ F: need largest x with T ∧ x ≤ F. T∧T=T≰F, T∧F=F≤F. So x=F.\nF ⊸ anything: F∧x=F≤anything. So x=T works.',
     notationReveal: '⊸ in Bool = implication!\n\nF⊸F=T, F⊸T=T\nT⊸F=F, T⊸T=T\n\n"false implies anything" = true\nThis is material implication!\n\nBool is monoidal closed (Ex 2.84)',
   ),
+  // Cost preorder: fill in + table for {0, 1, 2, ∞} with ≥ order (Ex 2.37)
+  // Cost = ([0,∞], ≥, 0, +). Note: ORDER IS REVERSED (≥ not ≤)!
+  MonoidalTableConfig(
+    id: 'mt12-cost',
+    title: 'COST',
+    subtitle: 'Fill in + for costs {0, 1, 2, ∞}.\nNote: order is ≥ (bigger = lower!)',
+    elements: const ['0', '1', '2', '∞'],
+    operationSymbol: '+',
+    expectedTable: const [
+      [0, 1, 2, 3], // 0+0=0, 0+1=1, 0+2=2, 0+∞=∞
+      [1, 2, 3, 3], // 1+0=1, 1+1=2, 1+2=3→∞(cap), 1+∞=∞
+      [2, 3, 3, 3], // 2+0=2, 2+1=3→∞, 2+2=4→∞, 2+∞=∞
+      [3, 3, 3, 3], // ∞+anything=∞
+    ],
+    givenCells: {(0, 0), (0, 1), (0, 2), (0, 3)}, // first row given
+    unitIndex: 0, // 0 is the unit for Cost
+    hint: 'Cost = ([0,∞], ≥, 0, +).\nAdd normally, cap at ∞ if result > 2.\n0 is the unit: 0 + x = x (zero cost = free).',
+    notationReveal: 'Cost = ([0,∞], ≥, 0, +)\n\nThe order is ≥ (reversed!)\n"lower cost = better"\n0 = free, ∞ = impossible\n\nCost-categories are\nLawvere metric spaces! (Def 2.53)',
+  ),
+
+  // Ex 2.103: Identity matrices for Bool and Cost
+  MonoidalTableConfig(
+    id: 'mt13-identity-bool',
+    title: 'EYE',
+    subtitle: 'Fill in the 3×3 identity matrix for Bool.\nI(x,y) = true if x=y, false otherwise.',
+    elements: const ['1', '2', '3'],
+    operationSymbol: 'I',
+    expectedTable: const [
+      [1, 0, 0], // I(1,1)=T, I(1,2)=F, I(1,3)=F
+      [0, 1, 0], // I(2,1)=F, I(2,2)=T, I(2,3)=F
+      [0, 0, 1], // I(3,1)=F, I(3,2)=F, I(3,3)=T
+    ],
+    givenCells: {(0, 0)}, // I(1,1)=T given
+    unitIndex: null,
+    hint: 'The identity matrix: I(x,y) = monoidal unit if x=y, monoidal zero otherwise.\nFor Bool: unit = true, zero = false.',
+    notationReveal: 'The Bool identity matrix!\n\nI(x,y) = true iff x = y\n\nThis is the identity for\nV-matrix multiplication.\nI * M = M = M * I\n\n(Ex 2.103)',
+  ),
 ];
 
 /// Level types for Chapter 2.
