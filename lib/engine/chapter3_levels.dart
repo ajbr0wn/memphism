@@ -164,6 +164,66 @@ final ch3TapLevels = [
 // ── Composition table levels (Section 3.2.1) ──
 
 final ch3TableLevels = [
+  // Functors = structure-preserving maps between categories
+  TapAnswerConfig(
+    id: 'c3t11-functor',
+    title: 'FUNCTOR',
+    question: 'A functor F: C → D sends\nobjects to objects AND\nmorphisms to morphisms.\n\nFunctors between preorders are...?',
+    elementLabels: const ['functions', 'monotone maps', 'bijections'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // monotone maps!
+    highlighted: {},
+    hint: 'Preorders are categories. Functors preserve structure. For preorders, structure = order. So functors = order-preserving = monotone!',
+    notationReveal: 'Functors between preorders\n= monotone maps!\n\nYou already know functors —\nthe monotone map levels from\nChapter 1 were functors all along.\n\n(Ex 3.42)',
+  ),
+
+  // Natural transformation: the "iff" connection
+  TapAnswerConfig(
+    id: 'c3t12-nattrans',
+    title: 'BETWEEN',
+    question: 'A natural transformation α: F ⇒ G\ngoes between two functors.\n\nFor preorders, a natural\ntransformation F ⇒ G exists iff...?',
+    elementLabels: const ['F = G', 'F(x) ≤ G(x) for all x', 'F(x) ≥ G(x)'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // F(x) ≤ G(x) pointwise
+    highlighted: {},
+    hint: 'In a preorder, at most one morphism between any two objects. So α exists iff F(x) ≤ G(x) for every x.',
+    notationReveal: 'α: F ⇒ G exists iff\nF(x) ≤ G(x) for all x.\n\nNatural transformations\nbetween preorder functors\n= pointwise ≤.\n\nThe "naturality square" commutes\nautomatically in preorders!\n\n(Ex 3.57)',
+  ),
+
+  // Cat: the category of categories (Ex 3.43)
+  TapAnswerConfig(
+    id: 'c3t13-cat',
+    title: 'META',
+    question: 'There is a category Cat where:\n- objects = categories\n- morphisms = functors\n\nWhat is the identity functor id_C?',
+    elementLabels: const ['sends everything to ⊥', 'sends everything to itself', 'reverses all arrows'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // sends everything to itself
+    highlighted: {},
+    hint: 'The identity functor does nothing: id_C(x) = x for objects, id_C(f) = f for morphisms.',
+    notationReveal: 'id_C sends every object\nand morphism to itself.\n\nCategories form a category!\n"The primordial ooze."\n\n(Ex 3.43)',
+  ),
+
+  // How many functors 2 → 3? (Ex 3.37)
+  TapAnswerConfig(
+    id: 'c3t14-count-functors',
+    title: 'MAP CAT',
+    question: 'Category 2: • → •\nCategory 3: • → • → •\n\nA functor F: 2 → 3 is determined\nby where it sends the two objects.\nHow many functors 2 → 3 are there?',
+    elementLabels: const ['3', '6', '9'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 6 functors
+    highlighted: {},
+    hint: 'F must preserve the arrow. If v₁→v₂ in 2, then F(v₁)→F(v₂) in 3.\nSo F(v₁) ≤ F(v₂) in the chain 1≤2≤3.\nPairs (a,b) with a≤b: (1,1),(1,2),(1,3),(2,2),(2,3),(3,3) = 6.',
+    notationReveal: '6 functors from 2 to 3!\n\nThey correspond to pairs (a,b)\nwith a ≤ b in the 3-chain.\n\nThis is C(3,2) + 3 = 3+3 = 6\n(choosing 2 from 3 with order)\n\n(Ex 3.37)',
+  ),
+
   // Composition table for category 2 (Ex 3.10 simplified)
   // Morphisms: id_1, f, id_2. Composition:
   // id_1;id_1=id_1, id_1;f=f, f;id_2=f, id_2;id_2=id_2
