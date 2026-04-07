@@ -72,6 +72,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
   static Ch1LevelType _ch2TypeToIcon(Ch2LevelType type) {
     return switch (type) {
       Ch2LevelType.monoidalTable => Ch1LevelType.meetJoinPick, // grid icon
+      Ch2LevelType.tapAnswer => Ch1LevelType.bridge, // lightbulb icon
     };
   }
 
@@ -103,6 +104,11 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
         case Ch2LevelType.monoidalTable:
           screen = MonoidalTableScreen(
             config: monoidalTableLevels[level.index],
+            onComplete: () => _onComplete(index),
+          );
+        case Ch2LevelType.tapAnswer:
+          screen = TapAnswerScreen(
+            config: ch2BridgeLevels[level.index],
             onComplete: () => _onComplete(index),
           );
       }

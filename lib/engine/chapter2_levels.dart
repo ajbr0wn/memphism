@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../screens/monoidal_table_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
+import '../screens/tap_answer_screen.dart';
 
 /// Chapter 2: Resource Theories — Monoidal Preorders and Enrichment
 /// Covers: symmetric monoidal preorders, wiring diagrams, Bool/Cost,
@@ -252,8 +253,102 @@ final monoidalTableLevels = [
   ),
 ];
 
+// ── Tap-answer bridge levels for Ch2 concepts ──
+
+final ch2BridgeLevels = [
+  // What is a ⊗ b? (teach the operation notation)
+  TapAnswerConfig(
+    id: 'c2b1-product',
+    title: 'COMBINE',
+    question: 'In Bool, the monoidal product is ∧ (AND).\nWhat is true ∧ false?',
+    elementLabels: const ['false', 'true'],
+    positions: const [Offset(0.5, 0.65), Offset(0.5, 0.35)],
+    edges: {(0, 1)},
+    mapArrows: const [],
+    answer: 0, // true ∧ false = false
+    highlighted: {},
+    hint: 'AND: both must be true. true AND false = false.',
+    notationReveal: 'true ∧ false = false\n\n∧ is the monoidal product in Bool.\na ⊗ b combines two elements\ninto one. In Bool, ⊗ = AND.',
+  ),
+
+  // What's the unit?
+  TapAnswerConfig(
+    id: 'c2b2-unit',
+    title: 'NEUTRAL',
+    question: 'The monoidal unit I satisfies\nI ⊗ x = x for all x.\nIn Bool with ∧, what is I?',
+    elementLabels: const ['false', 'true'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // true is the unit for AND
+    highlighted: {},
+    hint: 'I ∧ x = x. Try: true ∧ false = false ✓, true ∧ true = true ✓.\nfalse ∧ true = false ✗ (should be true).',
+    notationReveal: 'I = true for Bool = (𝔹, ≤, true, ∧)\n\nThe unit "does nothing":\ntrue ∧ x = x always.\n\nLike 0 for addition,\nor 1 for multiplication.',
+  ),
+
+  // Is this monotone? (check the monoidal product preserves order)
+  TapAnswerConfig(
+    id: 'c2b3-mono-check',
+    title: 'CHECK',
+    question: 'Monotonicity: if a₁ ≤ b₁ and a₂ ≤ b₂,\nthen a₁⊗a₂ ≤ b₁⊗b₂.\n\nF ≤ T and F ≤ T.\nIs F∧F ≤ T∧T?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // F∧F=F, T∧T=T, F≤T ✓
+    highlighted: {},
+    hint: 'F∧F = F. T∧T = T. Is F ≤ T? Yes!',
+    notationReveal: 'F∧F = F ≤ T = T∧T ✓\n\nMonotonicity means ⊗\npreserves the order.\nBigger inputs → bigger output.\n\nThis is axiom (a) of Def 2.2.',
+  ),
+
+  // Cost: what does 0 mean?
+  TapAnswerConfig(
+    id: 'c2b4-cost-unit',
+    title: 'FREE',
+    question: 'In Cost = ([0,∞], ≥, 0, +),\nthe unit is 0.\nWhat does "cost 0" mean?',
+    elementLabels: const ['impossible', 'free'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 0 = free
+    highlighted: {},
+    hint: '0 + x = x. Zero cost = no cost = free!',
+    notationReveal: '0 = free (no cost)\n∞ = impossible (infinite cost)\n\nThe order is ≥ (reversed!):\n∞ ≤ 0 means "impossible is\nworse than free."\n\nCheaper = better = higher\nin the Cost order.',
+  ),
+
+  // What does ≥ mean in Cost? (reversed order!)
+  TapAnswerConfig(
+    id: 'c2b5-cost-order',
+    title: 'CHEAPER',
+    question: 'In Cost, the order is ≥.\nSo 3 ≤ 5 means 3 ≥ 5.\nIs 3 ≤ 5 in Cost?',
+    elementLabels: const ['no (3 < 5)', 'yes (3 ≥ 5)'],
+    positions: const [Offset(0.3, 0.5), Offset(0.7, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 0, // no! 3 < 5, so 3 is NOT ≤ 5 in Cost (where ≤ means ≥)
+    highlighted: {},
+    hint: 'In Cost, ≤ means ≥ on numbers. 3 ≥ 5? No! 3 < 5.\nSo 3 is NOT ≤ 5 in Cost. Cheaper is "higher" in Cost.',
+    notationReveal: '3 ≰ 5 in Cost!\n\nCost reverses the usual order.\n5 ≤ 3 in Cost (because 5 ≥ 3).\n\n"More expensive ≤ cheaper"\nBigger number = worse = lower.',
+  ),
+
+  // Bool-category: what does X(a,b) = true mean?
+  TapAnswerConfig(
+    id: 'c2b6-bool-cat',
+    title: 'MATRIX?',
+    question: 'A Bool-category X has X(a,b) ∈ {T,F}.\nX(a,b) = true means a ≤ b.\n\nIf a ≤ b and b ≤ c,\nwhat is X(a,c)?',
+    elementLabels: const ['false', 'true'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // true — transitivity!
+    highlighted: {},
+    hint: 'a ≤ b and b ≤ c implies a ≤ c (transitivity).\nSo X(a,c) = true.',
+    notationReveal: 'X(a,c) = true\n\nTransitivity: a≤b and b≤c → a≤c.\n\nIn Bool-category language:\nX(a,b) ∧ X(b,c) ≤ X(a,c)\n\nThis is the V-category axiom!\n(Def 2.46)',
+  ),
+];
+
 /// Level types for Chapter 2.
-enum Ch2LevelType { monoidalTable }
+enum Ch2LevelType { monoidalTable, tapAnswer }
 
 class Ch2Level {
   final String title;
@@ -274,6 +369,13 @@ final ch2AllLevels = [
     Ch2Level(
       title: monoidalTableLevels[i].title,
       type: Ch2LevelType.monoidalTable,
+      index: i,
+    ),
+  // Bridge levels teaching Ch2 notation
+  for (var i = 0; i < ch2BridgeLevels.length; i++)
+    Ch2Level(
+      title: ch2BridgeLevels[i].title,
+      type: Ch2LevelType.tapAnswer,
       index: i,
     ),
 ];
