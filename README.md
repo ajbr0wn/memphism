@@ -4,9 +4,9 @@ A game that teaches category theory through play. Neon Memphis Milano aesthetics
 
 Based on [Seven Sketches in Compositionality](https://arxiv.org/abs/1803.05316) by Brendan Fong & David Spivak.
 
-## Chapter 1: Orders & Adjunctions
+## 109 levels across 3 chapters
 
-49 levels across 8 mechanic types:
+### Chapter 1: Orders & Adjunctions (59 levels)
 
 | Mechanic | What you do | Concept |
 |----------|-------------|---------|
@@ -17,42 +17,36 @@ Based on [Seven Sketches in Compositionality](https://arxiv.org/abs/1803.05316) 
 | **Preorder** | Draw Hasse diagram edges | Divisibility, power sets, the cube |
 | **Meet/Join Pick** | Tap the correct answer in a Hasse diagram | GCD/LCM, intersection/union, AND/OR |
 | **Monotone Map** | Drag arrows between two Hasse diagrams | Order-preserving maps, cardinality |
+| **Bridge** | Tap-the-answer notation practice | f(p), f(p)≤q, g∘f, the Galois iff |
 | **Galois Connection** | Given one adjoint, find the other | Adjunctions, closure operators |
+
+### Chapter 2: Monoidal Preorders (25 levels)
+
+| Mechanic | What you do | Concept |
+|----------|-------------|---------|
+| **Monoidal Table** | Fill in a multiplication/operation table | Bool, Cost, power sets, ℕ, enrichment |
+| **Tap Answer** | Answer notation questions | ⊗, units, monotonicity, symmetry, wiring diagrams, quantales |
+
+### Chapter 3: Categories (25 levels)
+
+| Mechanic | What you do | Concept |
+|----------|-------------|---------|
+| **Tap Answer** | Answer questions about categories | Morphisms, functors, natural transformations, adjunctions |
+| **Composition Table** | Fill in morphism composition | Free categories, path composition |
 
 ## Design
 
 - **Discovery through play**: you experience the concept before seeing the notation
 - **Notation reveal**: after solving, the mathematical notation appears — naming something you already understand
-- **Spiral learning**: concepts return in new contexts (boolean joins become GCD become set union)
-- **Structural identity**: shapes distinguish elements, colors show grouping, normalization prevents confusion
-
-## Chapter 2: Monoidal Preorders
-
-19 levels with 2 mechanic types:
-
-| Mechanic | What you do | Concept |
-|----------|-------------|---------|
-| **Monoidal Table** | Fill in a multiplication/operation table by tapping cells | Symmetric monoidal preorders, units, Bool, Cost |
-| **Tap Answer** | Tap the correct answer to a notation question | ⊗ notation, units, monotonicity, Cost order, V-categories |
-
-Exercises covered: 2.5, 2.27, 2.29, 2.30, 2.31, 2.34, 2.35, 2.84, 2.103.
-
-## Chapter 3: Categories
-
-11 levels introducing category theory:
-
-| Mechanic | What you do | Concept |
-|----------|-------------|---------|
-| **Tap Answer** | Answer questions about morphisms, composition, identities | Categories, free categories, Set, isomorphisms |
-| **Composition Table** | Fill in a morphism composition table | Path composition in free categories |
-
-Exercises covered: 3.10, 3.12, 3.15, 3.25, 3.29.
+- **Bridge levels**: teach notation through simple tap-the-answer interactions before advanced mechanics
+- **Spiral learning**: concepts return in new contexts (meets = products, monotone maps = functors, Galois = adjunctions)
+- **Blind playtested**: automated agents verify the learning flow works
 
 ## Build
 
 ```
 flutter build apk --release
-flutter build web --release
+flutter build web --release    # playtest via Playwright
 ```
 
 ## License
