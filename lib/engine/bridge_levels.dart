@@ -133,4 +133,33 @@ final bridgeLevels = [
     hint: 'g(1) = 1. Is 2 ≤ 1? No!\nSo f(2) ≤ 1 is false AND 2 ≤ g(1) is false.\nBoth sides agree!',
     notationReveal: 'f(2) ≤ 1 ✗  AND  2 ≤ g(1) ✗\n\nBoth false — they still agree!\n\nThe "iff" means: the two\nquestions ALWAYS have the\nsame answer (both true or\nboth false).\n\nThat\'s a Galois connection.',
   ),
+  // Level 9: Verify a complete Galois connection (transitional to drag mechanic)
+  TapAnswerConfig(
+    id: 'br9-verify',
+    title: 'VERIFY',
+    question: 'f(1)=1, f(2)=2. g(1)=1, g(2)=2.\nCheck ALL pairs:\n  f(1)≤1 iff 1≤g(1): T iff T ✓\n  f(1)≤2 iff 1≤g(2): T iff T ✓\n  f(2)≤1 iff 2≤g(1): F iff F ✓\n  f(2)≤2 iff 2≤g(2): T iff T ✓\n\nIs this a Galois connection?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // yes!
+    highlighted: {},
+    hint: 'All four pairs agree (both sides same answer).\nThe iff holds for EVERY (p, q). So yes!',
+    notationReveal: 'Yes! f(p) ≤ q ⟺ p ≤ g(q)\nholds for ALL p ∈ P and q ∈ Q.\n\nThis is a Galois connection!\nf is LEFT adjoint to g.\n\nNext: you\'ll BUILD g yourself\nby dragging arrows.',
+  ),
+
+  // Level 10: Monotonicity check (fixes the orphaned concept from SHIFT)
+  TapAnswerConfig(
+    id: 'br10-mono',
+    title: 'ORDER?',
+    question: 'f(1) = 2, f(2) = 3.\n1 ≤ 2 in P.\nIs f(1) ≤ f(2) in Q?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 2 ≤ 3, yes
+    highlighted: {},
+    hint: 'f(1)=2, f(2)=3. Is 2 ≤ 3? Yes!\nOrder preserved: 1≤2 → f(1)≤f(2).',
+    notationReveal: '1 ≤ 2  →  f(1)=2 ≤ f(2)=3 ✓\n\nThis is monotonicity!\nIf a ≤ b then f(a) ≤ f(b).\n\nBoth f and g in a Galois\nconnection must be monotone.',
+  ),
 ];

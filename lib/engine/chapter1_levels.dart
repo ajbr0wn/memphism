@@ -778,7 +778,7 @@ final galoisLevels = [
   GaloisLevelConfig(
     id: 'gal1-identity',
     title: 'ADJOINT',
-    subtitle: 'Given f, find g such that\nf(p) ≤ q  iff  p ≤ g(q).',
+    subtitle: 'Given f, find g such that\nf(p) ≤ q  iff  p ≤ g(q).\nDrag from Q nodes → P nodes to define g.',
     pLabels: const ['1', '2'],
     pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
     pEdges: {(0, 1)},
@@ -799,7 +799,7 @@ final galoisLevels = [
   GaloisLevelConfig(
     id: 'gal2-floor',
     title: 'ROUND',
-    subtitle: 'Given f (left adjoint), find g (right adjoint).',
+    subtitle: 'Given f (left adjoint), find g (right adjoint).\nDrag from Q nodes → P nodes.',
     pLabels: const ['1', '2'],
     pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
     pEdges: {(0, 1)},
@@ -819,7 +819,7 @@ final galoisLevels = [
   GaloisLevelConfig(
     id: 'gal3-diamond',
     title: 'CONNECT',
-    subtitle: 'Given f: Bool → Diamond, find g.',
+    subtitle: 'Given f: Bool → Diamond, find g.\nDrag from Q nodes → P nodes.',
     pLabels: const ['F', 'T'],
     pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
     pEdges: {(0, 1)},
