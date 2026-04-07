@@ -26,6 +26,16 @@ Based on [Seven Sketches in Compositionality](https://arxiv.org/abs/1803.05316) 
 - **Spiral learning**: concepts return in new contexts (boolean joins become GCD become set union)
 - **Structural identity**: shapes distinguish elements, colors show grouping, normalization prevents confusion
 
+## Chapter 2: Monoidal Preorders
+
+6 levels with 1 new mechanic:
+
+| Mechanic | What you do | Concept |
+|----------|-------------|---------|
+| **Monoidal Table** | Fill in a multiplication/operation table by tapping cells | Symmetric monoidal preorders, units, Bool, Cost |
+
+Exercises covered: 2.27, 2.29, 2.30, 2.31, 2.34, 2.35.
+
 ## Build
 
 ```
