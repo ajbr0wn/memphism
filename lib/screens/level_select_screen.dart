@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../engine/chapter1_levels.dart';
 import '../engine/chapter2_levels.dart';
+import '../engine/chapter3_levels.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
@@ -65,7 +66,24 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
         levelType: _ch2TypeToIcon(level.type),
       ));
     }
+    items.add(_ChapterHeader('CHAPTER 3: CATEGORIES'));
+    for (var i = 0; i < ch3AllLevels.length; i++) {
+      final level = ch3AllLevels[i];
+      items.add(_LevelItem(
+        title: level.title,
+        globalIndex: ch1AllLevels.length + ch2AllLevels.length + i,
+        isBoss: level.isBoss,
+        levelType: _ch3TypeToIcon(level.type),
+      ));
+    }
     return items;
+  }
+
+  static Ch1LevelType _ch3TypeToIcon(Ch3LevelType type) {
+    return switch (type) {
+      Ch3LevelType.tapAnswer => Ch1LevelType.bridge,
+      Ch3LevelType.compositionTable => Ch1LevelType.meetJoinPick,
+    };
   }
 
   // Map Ch2 types to Ch1 icon types for display
@@ -95,9 +113,41 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
   }
 
   void _playLevel(int index) {
+    final ch2Start = ch1AllLevels.length;
+    final ch3Start = ch2Start + ch2AllLevels.length;
+
+    // Chapter 3 levels
+    if (index >= ch3Start) {
+      final ch3Index = index - ch3Start;
+      final level = ch3AllLevels[ch3Index];
+      Widget screen;
+      switch (level.type) {
+        case Ch3LevelType.tapAnswer:
+          screen = TapAnswerScreen(
+            config: ch3TapLevels[level.index],
+            onComplete: () => _onComplete(index),
+          );
+        case Ch3LevelType.compositionTable:
+          screen = MonoidalTableScreen(
+            config: ch3TableLevels[level.index],
+            onComplete: () => _onComplete(index),
+          );
+      }
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => screen,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 400),
+        ),
+      );
+      return;
+    }
+
     // Chapter 2 levels start after ch1
-    if (index >= ch1AllLevels.length) {
-      final ch2Index = index - ch1AllLevels.length;
+    if (index >= ch2Start && index < ch3Start) {
+      final ch2Index = index - ch2Start;
       final level = ch2AllLevels[ch2Index];
       Widget screen;
       switch (level.type) {

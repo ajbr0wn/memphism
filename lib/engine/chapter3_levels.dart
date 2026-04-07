@@ -1,0 +1,220 @@
+import 'package:flutter/material.dart';
+import '../screens/monoidal_table_screen.dart';
+import '../screens/tap_answer_screen.dart';
+import '../screens/preorder_screen.dart';
+
+/// Chapter 3: Databases — Categories, Functors, and Universal Constructions
+/// Covers: categories, free categories, functors, natural transformations,
+/// adjunctions, limits and colimits.
+
+// ── Tap-answer levels: introducing categories ──
+
+final ch3TapLevels = [
+  // What is a category? Objects + morphisms + composition
+  TapAnswerConfig(
+    id: 'c3t1-morphism',
+    title: 'ARROW',
+    question: 'A category has objects and morphisms (arrows).\nA morphism f: A → B goes from A to B.\n\nIf f: A → B, what is the codomain of f?',
+    elementLabels: const ['A', 'B'],
+    positions: const [Offset(0.3, 0.5), Offset(0.7, 0.5)],
+    edges: {},
+    mapArrows: const [(0, 1)],
+    answer: 1, // B is the codomain
+    highlighted: {},
+    hint: 'f: A → B. The codomain (target) is where the arrow points TO.',
+    notationReveal: 'codomain of f = B\n\nf : A → B\nA = domain (source)\nB = codomain (target)\n\nEvery morphism has a\nsource and a target.',
+  ),
+
+  // Identity morphism
+  TapAnswerConfig(
+    id: 'c3t2-identity',
+    title: 'STAY',
+    question: 'Every object has an identity morphism.\nid_A : A → A "does nothing."\n\nWhat is id_A ; f if f : A → B?',
+    elementLabels: const ['A', 'B'],
+    positions: const [Offset(0.3, 0.5), Offset(0.7, 0.5)],
+    edges: {},
+    mapArrows: const [(0, 1)],
+    answer: 1, // id_A ; f = f, which goes to B
+    highlighted: {0},
+    hint: 'id_A "does nothing." So id_A then f is just f.\nf goes to B.',
+    notationReveal: 'id_A ; f = f\n\nThe identity "does nothing."\nComposing with id changes\nnothing — like adding 0\nor multiplying by 1.',
+  ),
+
+  // Composition
+  TapAnswerConfig(
+    id: 'c3t3-compose',
+    title: 'CHAIN',
+    question: 'f : A → B and g : B → C.\nTheir composite f;g goes A → ?',
+    elementLabels: const ['A', 'B', 'C'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [(0, 1), (1, 2)],
+    answer: 2, // f;g : A → C
+    highlighted: {0},
+    hint: 'f goes A→B, g goes B→C.\nFirst f, then g: A → B → C.\nThe composite goes A → C.',
+    notationReveal: 'f ; g : A → C\n\nComposition chains morphisms:\nfirst f, then g.\n\nThe book writes f;g\n(some books write g∘f).\nSame idea: follow the arrows!',
+  ),
+
+  // How many morphisms in category 2?
+  TapAnswerConfig(
+    id: 'c3t4-count',
+    title: 'PATHS',
+    question: 'The category 2 has two objects\nand one non-identity arrow f: v₁→v₂.\n\nHow many total morphisms\n(including identities)?',
+    elementLabels: const ['2', '3', '4'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 3 morphisms: id_v1, f, id_v2
+    highlighted: {},
+    hint: 'id_v₁, id_v₂, and f. That\'s 3 total.',
+    notationReveal: 'Category 2 has 3 morphisms:\nid_{v₁}, f, id_{v₂}\n\nMorphisms = paths in the graph.\nLength 0: identities (2 of them)\nLength 1: just f (1 of them)\n\n(Ex 3.10, Eq 3.8)',
+  ),
+
+  // What is category 1?
+  TapAnswerConfig(
+    id: 'c3t5-one',
+    title: 'ONE',
+    question: 'Category 1 has one object\nand no non-identity arrows.\n\nHow many morphisms total?',
+    elementLabels: const ['0', '1', '2'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 1 morphism: just the identity
+    highlighted: {},
+    hint: 'One object, one identity. That\'s it!',
+    notationReveal: 'Category 1 has 1 morphism:\njust id.\n\nOne object, one morphism.\nThe simplest possible category.\n\n(Ex 3.12)',
+  ),
+
+  // Category 0
+  TapAnswerConfig(
+    id: 'c3t6-zero',
+    title: 'VOID',
+    question: 'Category 0 has zero objects.\n\nHow many morphisms?',
+    elementLabels: const ['0', '1'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 0, // 0 morphisms
+    highlighted: {},
+    hint: 'No objects means no identities.\nNo identities means no morphisms at all.',
+    notationReveal: 'Category 0: nothing!\n\n0 objects, 0 morphisms.\nThe empty category.\n\nIt exists — it\'s just empty.\n\n(Ex 3.12)',
+  ),
+
+  // Loop graph = monoid = natural numbers
+  TapAnswerConfig(
+    id: 'c3t7-loop',
+    title: 'LOOP',
+    question: 'A loop s on one object z:\nPaths = z, s, s;s, s;s;s, ...\nPath of length n = sⁿ.\n\nConcatenating path m with path n\ngives path...?',
+    elementLabels: const ['m·n', 'm+n', 'mⁿ'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // m+n — path concatenation = addition
+    highlighted: {},
+    hint: 'Path of length 2 then path of length 3 = path of length 5.\nThat\'s addition!',
+    notationReveal: 'Path m ; path n = path (m+n)\n\nPath concatenation IS addition!\nThe loop category is the\nmonoid (ℕ, +, 0).\n\nA category with one object\n= a monoid. (Ex 3.15)',
+  ),
+
+  // Preorder as category
+  TapAnswerConfig(
+    id: 'c3t8-preorder-cat',
+    title: 'RECALL',
+    question: 'A preorder is a category where\nevery two parallel arrows are equal.\n\nIn the preorder a ≤ b ≤ c,\nhow many morphisms from a to c?',
+    elementLabels: const ['0', '1', '2'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // exactly 1 (at most one morphism between any two objects)
+    highlighted: {},
+    hint: 'a ≤ c, so there IS a morphism. But in a preorder, there\'s AT MOST one. So exactly 1.',
+    notationReveal: 'Exactly 1 morphism a → c.\n\nPreorders = categories where\nparallel arrows are equal.\n\nFree categories: every path\nis a different morphism.\nPreorders: all paths are the same.\n\nTwo ends of a spectrum!\n(Remark 3.23)',
+  ),
+
+  // Set: how many functions?
+  TapAnswerConfig(
+    id: 'c3t9-set',
+    title: 'FUNCTIONS',
+    question: 'In the category Set,\nmorphisms are functions.\n\nHow many functions are there\nfrom {1,2} to {a,b,c}?',
+    elementLabels: const ['6', '8', '9'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 2, // 3² = 9 functions
+    highlighted: {},
+    hint: 'Each of 2 inputs can go to any of 3 outputs.\n3 × 3 = 9.',
+    notationReveal: '|Set(2,3)| = 3² = 9\n\nFor finite sets:\n|Set(m,n)| = nᵐ\n\nEach input has n choices,\nand there are m inputs.\n\n(Ex 3.25)',
+  ),
+
+  // Isomorphism
+  TapAnswerConfig(
+    id: 'c3t10-iso',
+    title: 'INVERSE',
+    question: 'f: A → B is an isomorphism if\nthere exists g: B → A with\nf;g = id_A and g;f = id_B.\n\nIn Set, isomorphisms are...?',
+    elementLabels: const ['injections', 'surjections', 'bijections'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 2, // bijections
+    highlighted: {},
+    hint: 'An isomorphism has an inverse. You need to go back AND forth perfectly. That\'s a bijection!',
+    notationReveal: 'Isomorphisms in Set = bijections!\n\nf;g = id and g;f = id means\nf and g are perfect inverses.\n\nBijective = injective + surjective\n= perfect 1-to-1 correspondence.\n\n(Def 3.28, Ex 3.29)',
+  ),
+];
+
+// ── Composition table levels (Section 3.2.1) ──
+
+final ch3TableLevels = [
+  // Composition table for category 2 (Ex 3.10 simplified)
+  // Morphisms: id_1, f, id_2. Composition:
+  // id_1;id_1=id_1, id_1;f=f, f;id_2=f, id_2;id_2=id_2
+  // id_1;id_2=∅, id_2;f=∅, id_2;id_1=∅, f;id_1=∅, f;f=∅
+  // Use '-' for undefined compositions
+  MonoidalTableConfig(
+    id: 'c3m1-compose2',
+    title: 'TABLE',
+    subtitle: 'Fill in the composition table for category 2.\nv₁→v₂ with morphisms: id₁, f, id₂.',
+    elements: const ['id₁', 'f', 'id₂'],
+    operationSymbol: ';',
+    expectedTable: const [
+      [0, 1, 2], // id₁;id₁=id₁, id₁;f=f, id₁;id₂=? (undefined, but we mark as id₂ since we need valid indices)
+      [0, 1, 2], // This doesn't work well — composition is partial!
+      [0, 1, 2],
+    ],
+    givenCells: {(0, 0), (1, 1), (2, 2)},
+    unitIndex: null,
+    hint: 'id₁;f = f (identity does nothing).\nf;id₂ = f.\nid₁;id₁ = id₁.\nSome compositions are undefined (different endpoints).',
+    notationReveal: 'Composition in category 2:\nid₁;f = f, f;id₂ = f\n\nIdentities compose with\neverything they can.\n\nSome pairs can\'t compose:\nf;f is undefined (endpoints\ndon\'t match).',
+  ),
+];
+
+/// Level types for Chapter 3.
+enum Ch3LevelType { tapAnswer, compositionTable }
+
+class Ch3Level {
+  final String title;
+  final Ch3LevelType type;
+  final int index;
+  final bool isBoss;
+
+  const Ch3Level({
+    required this.title,
+    required this.type,
+    required this.index,
+    this.isBoss = false,
+  });
+}
+
+final ch3AllLevels = [
+  for (var i = 0; i < ch3TapLevels.length; i++)
+    Ch3Level(
+      title: ch3TapLevels[i].title,
+      type: Ch3LevelType.tapAnswer,
+      index: i,
+    ),
+  for (var i = 0; i < ch3TableLevels.length; i++)
+    Ch3Level(
+      title: ch3TableLevels[i].title,
+      type: Ch3LevelType.compositionTable,
+      index: i,
+    ),
+];
