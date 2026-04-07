@@ -20,18 +20,18 @@ class MonoidalTableConfig {
   final String? notationReveal;
   final String? hint;
 
-  const MonoidalTableConfig({
+  MonoidalTableConfig({
     required this.id,
     required this.title,
     this.subtitle,
     required this.elements,
     required this.operationSymbol,
     required this.expectedTable,
-    this.givenCells = const {},
+    Set<(int, int)>? givenCells,
     this.unitIndex,
     this.notationReveal,
     this.hint,
-  });
+  }) : givenCells = givenCells ?? {};
 }
 
 class MonoidalTableScreen extends StatefulWidget {
