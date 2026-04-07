@@ -159,11 +159,7 @@ final List<TapAnswerConfig> ch3TapLevels = [
     hint: 'An isomorphism has an inverse. You need to go back AND forth perfectly. That\'s a bijection!',
     notationReveal: 'Isomorphisms in Set = bijections!\n\nf;g = id and g;f = id means\nf and g are perfect inverses.\n\nBijective = injective + surjective\n= perfect 1-to-1 correspondence.\n\n(Def 3.28, Ex 3.29)',
   ),
-];
 
-// ── Composition table levels (Section 3.2.1) ──
-
-final List<MonoidalTableConfig> ch3TableLevels = [
   // Functors = structure-preserving maps between categories
   TapAnswerConfig(
     id: 'c3t11-functor',
@@ -223,7 +219,11 @@ final List<MonoidalTableConfig> ch3TableLevels = [
     hint: 'F must preserve the arrow. If v₁→v₂ in 2, then F(v₁)→F(v₂) in 3.\nSo F(v₁) ≤ F(v₂) in the chain 1≤2≤3.\nPairs (a,b) with a≤b: (1,1),(1,2),(1,3),(2,2),(2,3),(3,3) = 6.',
     notationReveal: '6 functors from 2 to 3!\n\nThey correspond to pairs (a,b)\nwith a ≤ b in the 3-chain.\n\nThis is C(3,2) + 3 = 3+3 = 6\n(choosing 2 from 3 with order)\n\n(Ex 3.37)',
   ),
+];
 
+// ── Composition table levels (Section 3.2.1) ──
+
+final List<MonoidalTableConfig> ch3TableLevels = [
   // Composition table for category 2 (Ex 3.10 simplified)
   // Morphisms: id_1, f, id_2. Composition:
   // id_1;id_1=id_1, id_1;f=f, f;id_2=f, id_2;id_2=id_2
