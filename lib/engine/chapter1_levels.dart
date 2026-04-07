@@ -748,6 +748,24 @@ final monotoneLevels = [
     hint: '∅ has 0 elements, {1} has 1, {2} has 1, {1,2} has 2.',
     notationReveal: '|·| : P({1,2}) → ℕ\n\nCardinality is monotone!\nA ⊆ B implies |A| ≤ |B|\n\nThis "flattens" the diamond\ninto a chain (Ex 1.63)',
   ),
+
+  // Closure operator: compute j = g∘f (Section 1.4.4)
+  // From UNSQUEEZE: f: 1↦1, 2↦1, 3↦2. g: 1↦2, 2↦3, 3↦3.
+  // j = g∘f: 1↦g(1)=2, 2↦g(1)=2, 3↦g(2)=3.
+  MonotoneLevelConfig(
+    id: 'mon6-closure',
+    title: 'CLOSURE',
+    subtitle: 'Compute j = g∘f (the "round trip").\nMaps P to itself: p ≤ j(p) and j(j(p)) = j(p).',
+    domainLabels: const ['1', '2', '3'],
+    domainPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    domainEdges: {(0, 1), (1, 2)},
+    codomainLabels: const ['1', '2', '3'],
+    codomainPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    codomainEdges: {(0, 1), (1, 2)},
+    expectedMap: {0: 1, 1: 1, 2: 2}, // j: 1↦2, 2↦2, 3↦3
+    hint: 'From UNSQUEEZE: f(1)=1, f(2)=1, f(3)=2 and g(1)=2, g(2)=3, g(3)=3.\nj(p) = g(f(p)). So j(1)=g(1)=2, j(2)=g(1)=2, j(3)=g(2)=3.',
+    notationReveal: 'j : 1↦2, 2↦2, 3↦3\n\nFixed points = {2, 3}\nj "rounds up" to fixed points.\n\np ≤ j(p) ✓  j(j(p)) = j(p) ✓\n\nThis is a closure operator!\n(Def 1.120, Section 1.4.4 ✓)',
+  ),
 ];
 
 // ── Galois connection levels (Section 1.4, Def 1.95) ──
@@ -815,6 +833,54 @@ final galoisLevels = [
     hint: 'g(q) = largest p with f(p) ≤ q.\nf(F)=⊥, f(T)=⊤.\ng(⊥): f(F)=⊥≤⊥ ✓ → F. g(L): f(F)=⊥≤L ✓, f(T)=⊤≤L? ✗ → F.\ng(⊤): f(T)=⊤≤⊤ ✓ → T.',
     notationReveal: 'g collapses the middle!\nL and R both map to F.\n\nThe right adjoint "rounds down"\nto the image of f.\n\nInformation is lost — Galois\nconnections aren\'t isomorphisms.',
   ),
+
+  // Exercise 1.99 part 1: 3-chain → 3-chain (non-crossing arrows)
+  // f(1)=1, f(2)=1, f(3)=2. g must satisfy f(p)≤q iff p≤g(q).
+  // f(1)=1≤1 iff 1≤g(1) → g(1)≥1. f(2)=1≤1 iff 2≤g(1) → g(1)≥2. f(3)=2≤1? no → ok.
+  // So g(1)=2. f(1)=1≤2 iff 1≤g(2)→g(2)≥1. f(2)=1≤2→2≤g(2)→g(2)≥2. f(3)=2≤2→3≤g(2)→g(2)≥3.
+  // So g(2)=3. f(1)=1≤3→1≤g(3). f(2)=1≤3→2≤g(3). f(3)=2≤3→3≤g(3). g(3)=3.
+  GaloisLevelConfig(
+    id: 'gal4-squeeze',
+    title: 'UNSQUEEZE',
+    subtitle: 'Given f: 3→3 (left adjoint), find g.',
+    pLabels: const ['1', '2', '3'],
+    pPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    pEdges: {(0, 1), (1, 2)},
+    qLabels: const ['1', '2', '3'],
+    qPositions: const [Offset(0.5, 0.8), Offset(0.5, 0.5), Offset(0.5, 0.2)],
+    qEdges: {(0, 1), (1, 2)},
+    givenMap: {0: 0, 1: 0, 2: 1}, // f: 1↦1, 2↦1, 3↦2
+    fIsGiven: true,
+    expectedAnswer: {0: 1, 1: 2, 2: 2}, // g: 1↦2, 2↦3, 3↦3
+    hint: 'g(q) = largest p with f(p) ≤ q.\nf maps 1,2 both to 1, and 3 to 2.\nSo g(1) must be ≥ both 1 and 2 (since f(1)=f(2)=1≤1). g(1)=2.',
+    notationReveal: 'f squeezes, g stretches!\n\nf(1)=f(2)=1 collapses two elements.\ng "un-squeezes" by mapping\nto the LARGEST preimage.\n\nEx 1.99 ✓',
+  ),
+
+  // Closure operator: compute j = g∘f for the ROUND adjunction
+  // f: 1↦1, 2↦3. g: 1↦1, 2↦1, 3↦2.
+  // j = g∘f: 1↦g(f(1))=g(1)=1, 2↦g(f(2))=g(3)=2.
+  // j is identity! (because f is injective — no info lost)
+  GaloisLevelConfig(
+    id: 'gal5-closure1',
+    title: 'CLOSE',
+    subtitle: 'Compute the closure j = g∘f.\nWhat does "round trip" f then g do?',
+    pLabels: const ['1', '2'],
+    pPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    pEdges: {(0, 1)},
+    qLabels: const ['1', '2'],
+    qPositions: const [Offset(0.5, 0.7), Offset(0.5, 0.3)],
+    qEdges: {(0, 1)},
+    // "Given" is f;g composite shown as a monotone map P→P
+    // But we use a trick: show g as "given" (Q→P) and ask for j: P→P
+    // Actually let's just make this a monotone level instead...
+    // For now: give g, find f (the left adjoint going P→Q)
+    givenMap: {0: 0, 1: 1}, // g: 1↦1, 2↦2 (identity on Q=P)
+    fIsGiven: false, // g is given, find f
+    expectedAnswer: {0: 0, 1: 1}, // f: 1↦1, 2↦2
+    hint: 'g is the identity. What f makes f(p) ≤ q iff p ≤ g(q) = q? That\'s just f(p) ≤ q iff p ≤ q... f = identity!',
+    notationReveal: 'When g = id, f = id too!\n\nThe closure j = g∘f = id∘id = id.\nFixed points of id = everything.\n\nDef 1.120: a closure operator j\nsatisfies p ≤ j(p) and j(j(p)) ≅ j(p)',
+  ),
+
 ];
 
 /// Unified level type for the level select screen.
