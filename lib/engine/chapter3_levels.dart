@@ -9,7 +9,7 @@ import '../screens/preorder_screen.dart';
 
 // ── Tap-answer levels: introducing categories ──
 
-final ch3TapLevels = [
+final List<TapAnswerConfig> ch3TapLevels = [
   // What is a category? Objects + morphisms + composition
   TapAnswerConfig(
     id: 'c3t1-morphism',
@@ -163,7 +163,7 @@ final ch3TapLevels = [
 
 // ── Composition table levels (Section 3.2.1) ──
 
-final ch3TableLevels = [
+final List<MonoidalTableConfig> ch3TableLevels = [
   // Functors = structure-preserving maps between categories
   TapAnswerConfig(
     id: 'c3t11-functor',

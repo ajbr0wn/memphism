@@ -9,7 +9,7 @@ import '../screens/tap_answer_screen.dart';
 
 // ── Monoidal table levels (Section 2.2) ──
 
-final monoidalTableLevels = [
+final List<MonoidalTableConfig> monoidalTableLevels = [
   // Exercise 2.27: Bool with AND — fill the truth table
   MonoidalTableConfig(
     id: 'mt1-bool-and',
@@ -255,7 +255,7 @@ final monoidalTableLevels = [
 
 // ── Tap-answer bridge levels for Ch2 concepts ──
 
-final ch2BridgeLevels = [
+final List<TapAnswerConfig> ch2BridgeLevels = [
   // What is a ⊗ b? (teach the operation notation)
   TapAnswerConfig(
     id: 'c2b1-product',
