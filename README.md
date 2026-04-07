@@ -28,13 +28,25 @@ Based on [Seven Sketches in Compositionality](https://arxiv.org/abs/1803.05316) 
 
 ## Chapter 2: Monoidal Preorders
 
-6 levels with 1 new mechanic:
+19 levels with 2 mechanic types:
 
 | Mechanic | What you do | Concept |
 |----------|-------------|---------|
 | **Monoidal Table** | Fill in a multiplication/operation table by tapping cells | Symmetric monoidal preorders, units, Bool, Cost |
+| **Tap Answer** | Tap the correct answer to a notation question | ⊗ notation, units, monotonicity, Cost order, V-categories |
 
-Exercises covered: 2.27, 2.29, 2.30, 2.31, 2.34, 2.35.
+Exercises covered: 2.5, 2.27, 2.29, 2.30, 2.31, 2.34, 2.35, 2.84, 2.103.
+
+## Chapter 3: Categories
+
+11 levels introducing category theory:
+
+| Mechanic | What you do | Concept |
+|----------|-------------|---------|
+| **Tap Answer** | Answer questions about morphisms, composition, identities | Categories, free categories, Set, isomorphisms |
+| **Composition Table** | Fill in a morphism composition table | Path composition in free categories |
+
+Exercises covered: 3.10, 3.12, 3.15, 3.25, 3.29.
 
 ## Build
 
