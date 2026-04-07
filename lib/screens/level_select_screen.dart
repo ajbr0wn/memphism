@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../engine/chapter1_levels.dart';
+import '../engine/chapter2_levels.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
 import '../screens/galois_screen.dart';
+import '../screens/monoidal_table_screen.dart';
 import '../screens/monotone_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
@@ -18,8 +20,58 @@ class LevelSelectScreen extends StatefulWidget {
   State<LevelSelectScreen> createState() => _LevelSelectScreenState();
 }
 
+// Items in the level list (either chapter headers or level cards)
+sealed class _ListItem {}
+class _ChapterHeader extends _ListItem {
+  final String title;
+  _ChapterHeader(this.title);
+}
+class _LevelItem extends _ListItem {
+  final String title;
+  final int globalIndex;
+  final bool isBoss;
+  final Ch1LevelType levelType; // reuse Ch1's type for icon mapping
+  _LevelItem({required this.title, required this.globalIndex, this.isBoss = false, required this.levelType});
+}
+
 class _LevelSelectScreenState extends State<LevelSelectScreen> {
   int _unlockedUpTo = 0;
+
+  static final _totalLevels = ch1AllLevels.length + ch2AllLevels.length;
+
+  late final List<_ListItem> _allItems = _buildItems();
+
+  List<_ListItem> _buildItems() {
+    final items = <_ListItem>[];
+    items.add(_ChapterHeader('CHAPTER 1: ORDERS & PARTITIONS'));
+    for (var i = 0; i < ch1AllLevels.length; i++) {
+      final level = ch1AllLevels[i];
+      items.add(_LevelItem(
+        title: level.title,
+        globalIndex: i,
+        isBoss: level.isBoss,
+        levelType: level.type,
+      ));
+    }
+    items.add(_ChapterHeader('CHAPTER 2: MONOIDAL PREORDERS'));
+    for (var i = 0; i < ch2AllLevels.length; i++) {
+      final level = ch2AllLevels[i];
+      items.add(_LevelItem(
+        title: level.title,
+        globalIndex: ch1AllLevels.length + i,
+        isBoss: level.isBoss,
+        levelType: _ch2TypeToIcon(level.type),
+      ));
+    }
+    return items;
+  }
+
+  // Map Ch2 types to Ch1 icon types for display
+  static Ch1LevelType _ch2TypeToIcon(Ch2LevelType type) {
+    return switch (type) {
+      Ch2LevelType.monoidalTable => Ch1LevelType.meetJoinPick, // grid icon
+    };
+  }
 
   @override
   void initState() {
@@ -40,6 +92,30 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
   }
 
   void _playLevel(int index) {
+    // Chapter 2 levels start after ch1
+    if (index >= ch1AllLevels.length) {
+      final ch2Index = index - ch1AllLevels.length;
+      final level = ch2AllLevels[ch2Index];
+      Widget screen;
+      switch (level.type) {
+        case Ch2LevelType.monoidalTable:
+          screen = MonoidalTableScreen(
+            config: monoidalTableLevels[level.index],
+            onComplete: () => _onComplete(index),
+          );
+      }
+      Navigator.of(context).push(
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) => screen,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          transitionDuration: const Duration(milliseconds: 400),
+        ),
+      );
+      return;
+    }
+
     final level = ch1AllLevels[index];
 
     Widget screen;
@@ -128,34 +204,37 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(28, 0, 28, 32),
-              child: Text(
-                'CHAPTER 1: ORDERS & PARTITIONS',
-                style: TextStyle(
-                  color: Palette.textDim,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 3,
-                ),
-              ),
-            ),
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
-                itemCount: ch1AllLevels.length,
+                itemCount: _allItems.length,
                 itemBuilder: (context, index) {
-                  final level = ch1AllLevels[index];
-                  final unlocked = index <= _unlockedUpTo;
-                  final completed = index < _unlockedUpTo;
+                  final item = _allItems[index];
+                  if (item is _ChapterHeader) {
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 16, bottom: 12),
+                      child: Text(
+                        item.title,
+                        style: TextStyle(
+                          color: Palette.textDim,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                    );
+                  }
+                  final card = item as _LevelItem;
+                  final unlocked = card.globalIndex <= _unlockedUpTo;
+                  final completed = card.globalIndex < _unlockedUpTo;
                   return _LevelCard(
-                    title: level.title,
-                    index: index,
+                    title: card.title,
+                    index: card.globalIndex,
                     unlocked: unlocked,
                     completed: completed,
-                    isBoss: level.isBoss,
-                    levelType: level.type,
-                    onTap: unlocked ? () => _playLevel(index) : null,
+                    isBoss: card.isBoss,
+                    levelType: card.levelType,
+                    onTap: unlocked ? () => _playLevel(card.globalIndex) : null,
                   );
                 },
               ),
