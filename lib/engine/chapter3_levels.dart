@@ -309,6 +309,51 @@ final List<TapAnswerConfig> ch3TapLevels = [
     notationReveal: '3! = 6 bijections.\n\nFor sets of size n:\nn! = n × (n-1) × ... × 1\n\nThese are all the "shuffles"\n(permutations).\n\n(Ex 3.30)',
   ),
 
+  // Data migration: pullback along a functor (Section 3.4.1)
+  TapAnswerConfig(
+    id: 'c3t22-migrate',
+    title: 'MIGRATE',
+    question: 'Data migration: a functor F: C→D\nlets you pull back any D-instance\nto a C-instance via composition.\n\nIf I: D→Set and F: C→D,\nwhat is the C-instance?',
+    elementLabels: const ['I∘F', 'F∘I', 'F⁻¹'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 0, // F;I = I∘F (precompose)
+    highlighted: {},
+    hint: 'C →F→ D →I→ Set. Compose! The C-instance is F;I (or equivalently I∘F).',
+    notationReveal: 'Pullback = F;I : C → Set\n\nJust compose the functors!\nF translates the schema,\nI fills in the data.\n\nΔ_F(I) := F;I\n\n(Def 3.68, Section 3.4.1)',
+  ),
+
+  // Terminal object (Def 3.79)
+  TapAnswerConfig(
+    id: 'c3t23-terminal',
+    title: 'TERMINAL',
+    question: 'A terminal object Z has exactly\none morphism C → Z for every C.\n\nIn Set, what is a terminal object?',
+    elementLabels: const ['∅ (empty)', '{•} (one elem)', 'ℕ (naturals)'],
+    positions: const [Offset(0.2, 0.5), Offset(0.5, 0.5), Offset(0.8, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // any one-element set
+    highlighted: {},
+    hint: 'For any set C, there must be exactly one function C → Z. If Z = {•}, every element maps to •. That\'s the only option!',
+    notationReveal: 'Terminal in Set = any singleton {•}\n\nExactly one function C → {•}\nfor any C: send everything to •.\n\nIn preorders: terminal = top\nelement (if it exists).\n\n(Ex 3.80-3.81)',
+  ),
+
+  // Product (Def 3.86)
+  TapAnswerConfig(
+    id: 'c3t24-product',
+    title: 'PRODUCT',
+    question: 'The product X × Y in Set is\nthe set of all pairs (x, y).\n\n|{a,b}| = 2, |{1,2,3}| = 3.\nWhat is |{a,b} × {1,2,3}|?',
+    elementLabels: const ['5', '6', '8'],
+    positions: const [Offset(0.25, 0.5), Offset(0.5, 0.5), Offset(0.75, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 2 × 3 = 6
+    highlighted: {},
+    hint: 'All pairs: (a,1),(a,2),(a,3),(b,1),(b,2),(b,3). That\'s 2 × 3 = 6.',
+    notationReveal: '|X × Y| = |X| × |Y| = 6\n\nProducts in Set = cartesian products.\nProducts in preorders = meets!\n\nMeets (∧) from Chapter 1 are\nproducts in disguise.\n\n(Def 3.86)',
+  ),
+
   // Retraction: almost-inverse (Example 3.34)
   TapAnswerConfig(
     id: 'c3t21-retraction',
