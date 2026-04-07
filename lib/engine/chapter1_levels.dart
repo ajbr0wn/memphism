@@ -3,7 +3,9 @@ import '../models/partition.dart';
 import '../screens/function_screen.dart';
 import '../screens/join_screen.dart';
 import '../screens/meet_join_pick_screen.dart';
+import '../engine/bridge_levels.dart';
 import '../screens/galois_screen.dart';
+import '../screens/tap_answer_screen.dart';
 import '../screens/monotone_screen.dart';
 import '../screens/ordering_screen.dart';
 import '../screens/partition_screen.dart';
@@ -884,7 +886,7 @@ final galoisLevels = [
 ];
 
 /// Unified level type for the level select screen.
-enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick, monotone, galois }
+enum Ch1LevelType { partition, ordering, join, function_, preorder, meetJoinPick, monotone, bridge, galois }
 
 class Ch1Level {
   final String title;
@@ -949,6 +951,13 @@ final ch1AllLevels = [
     Ch1Level(
       title: monotoneLevels[i].title,
       type: Ch1LevelType.monotone,
+      index: i,
+    ),
+  // Bridge levels (teach notation before Galois)
+  for (var i = 0; i < bridgeLevels.length; i++)
+    Ch1Level(
+      title: bridgeLevels[i].title,
+      type: Ch1LevelType.bridge,
       index: i,
     ),
   // Galois connection levels
