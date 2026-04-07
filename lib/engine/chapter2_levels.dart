@@ -345,6 +345,95 @@ final List<TapAnswerConfig> ch2BridgeLevels = [
     hint: 'a ≤ b and b ≤ c implies a ≤ c (transitivity).\nSo X(a,c) = true.',
     notationReveal: 'X(a,c) = true\n\nTransitivity: a≤b and b≤c → a≤c.\n\nIn Bool-category language:\nX(a,b) ∧ X(b,c) ≤ X(a,c)\n\nThis is the V-category axiom!\n(Def 2.46)',
   ),
+  // Symmetry: x ⊗ y = y ⊗ x (Def 2.2d)
+  TapAnswerConfig(
+    id: 'c2b7-symmetry',
+    title: 'SWAP',
+    question: 'Symmetry: a ⊗ b = b ⊗ a.\n\nIn (ℕ, ≤, 0, +):\nIs 3 + 5 = 5 + 3?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // yes
+    highlighted: {},
+    hint: '3 + 5 = 8 = 5 + 3. Addition is commutative!',
+    notationReveal: 'a ⊗ b = b ⊗ a (symmetry)\n\nThis is axiom (d) of Def 2.2.\nThe "symmetric" in "symmetric\nmonoidal preorder."\n\nNot all monoidal structures\nare symmetric! But ours are.',
+  ),
+
+  // Associativity: (a ⊗ b) ⊗ c = a ⊗ (b ⊗ c) (Def 2.2c)
+  TapAnswerConfig(
+    id: 'c2b8-assoc',
+    title: 'REGROUP',
+    question: 'Associativity: (a⊗b)⊗c = a⊗(b⊗c).\n\nIn Bool with ∧:\n(T ∧ F) ∧ T = ?\nT ∧ (F ∧ T) = ?',
+    elementLabels: const ['different', 'both F'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // both F
+    highlighted: {},
+    hint: '(T∧F)∧T = F∧T = F.\nT∧(F∧T) = T∧F = F.\nSame answer either way!',
+    notationReveal: '(T∧F)∧T = F = T∧(F∧T)\n\nGrouping doesn\'t matter!\nThis is axiom (c) of Def 2.2.\n\nLike (2+3)+4 = 2+(3+4) = 9.',
+  ),
+
+  // Wiring diagrams: series composition (Section 2.2.2)
+  TapAnswerConfig(
+    id: 'c2b9-series',
+    title: 'SERIES',
+    question: 'Wiring diagrams: if x ≤ y and y ≤ z,\nwe can chain them: x ≤ z.\n\nIn (ℕ, ≤, 0, +):\n2 ≤ 5 and 5 ≤ 8.\nCan we conclude 2 ≤ 8?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // yes, transitivity
+    highlighted: {},
+    hint: '2 ≤ 5 ≤ 8, so 2 ≤ 8 by transitivity. This is "connecting boxes in series."',
+    notationReveal: 'Series = transitivity!\n\nx ≤ y and y ≤ z → x ≤ z.\n\nIn wiring diagrams, connecting\nboxes end-to-end chains\ninequalities together.\n\n(Section 2.2.2)',
+  ),
+
+  // Wiring diagrams: parallel composition (monoidal product)
+  TapAnswerConfig(
+    id: 'c2b10-parallel',
+    title: 'PARALLEL',
+    question: 'Parallel: if a₁≤b₁ and a₂≤b₂,\nthen a₁⊗a₂ ≤ b₁⊗b₂.\n\nIn (ℕ,≤,0,+): 2≤5 and 3≤7.\nIs 2+3 ≤ 5+7?',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // 5 ≤ 12, yes
+    highlighted: {},
+    hint: '2+3 = 5 ≤ 12 = 5+7. Stacking valid boxes in parallel gives a valid box!',
+    notationReveal: 'Parallel = monotonicity of ⊗!\n\na₁≤b₁ and a₂≤b₂\nimplies a₁+a₂ ≤ b₁+b₂.\n\nIn wiring diagrams, stacking\nboxes vertically combines\ninequalities in parallel.\n\n(Section 2.2.2, Def 2.2a)',
+  ),
+
+  // Monoidal monotone: Bool → Cost (Ex 2.43)
+  TapAnswerConfig(
+    id: 'c2b11-bool-cost',
+    title: 'TRANSLATE',
+    question: 'g: Bool → Cost maps\ng(false) = ∞ and g(true) = 0.\n\nDoes g preserve the unit?\n(g(true) = 0 = unit of Cost?)',
+    elementLabels: const ['no', 'yes'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 1, // yes! g(unit_Bool) = g(true) = 0 = unit_Cost
+    highlighted: {},
+    hint: 'Unit of Bool = true. Unit of Cost = 0.\ng(true) = 0. So g sends unit to unit!',
+    notationReveal: 'g(I_Bool) = g(true) = 0 = I_Cost ✓\n\nA monoidal monotone must:\n(a) preserve the unit\n(b) preserve the product\n\ng maps "possible" (true) to\n"free" (cost 0) and\n"impossible" (false) to "∞".\n\n(Ex 2.43)',
+  ),
+
+  // Quantale: Bool has all joins (Ex 2.93)
+  TapAnswerConfig(
+    id: 'c2b12-quantale',
+    title: 'QUANTALE',
+    question: 'A quantale is a monoidal preorder\nwith all joins (∨ for any subset).\n\nBool = (𝔹, ≤, true, ∧).\nWhat is ∨∅ (join of empty set)?',
+    elementLabels: const ['false', 'true'],
+    positions: const [Offset(0.35, 0.5), Offset(0.65, 0.5)],
+    edges: {},
+    mapArrows: const [],
+    answer: 0, // false — the bottom element
+    highlighted: {},
+    hint: '∨∅ = the bottom element (smallest). In Bool, that\'s false.',
+    notationReveal: '∨∅ = false = ⊥\n\nThe join of nothing is the\nsmallest element.\n\nBool is a quantale! (Ex 2.93)\nSo is Cost (∨A = inf A).\n\nQuantales let us do "matrix\nmultiplication" (Section 2.5).',
+  ),
 ];
 
 /// Level types for Chapter 2.
